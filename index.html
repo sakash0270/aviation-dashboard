@@ -4,7 +4,12 @@
   <title>Aviation Ops Dashboard</title>
   <meta http-equiv="refresh" content="900">
   <style>
-    body { margin:0; font-family: Arial; background:#000; color:#fff; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: #fff;
+    }
 
     .header {
       background: linear-gradient(to right, red, orange);
@@ -13,43 +18,58 @@
       font-weight: bold;
     }
 
-    .container { display:flex; }
+    .container {
+      display: flex;
+      min-height: calc(100vh - 60px);
+      padding-bottom: 50px;
+    }
 
     .left {
-      width:70%;
-      padding:20px;
-      font-size:28px;
+      width: 70%;
+      padding: 20px;
+      font-size: 28px;
     }
 
     .right {
-      width:30%;
-      padding:20px;
-      background:#111;
+      width: 30%;
+      padding: 20px;
+      background: #111;
     }
 
     .box {
-      margin-bottom:15px;
-      padding:10px;
-      border:1px solid #333;
+      margin-bottom: 15px;
+      padding: 12px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      font-size: 20px;
+    }
+
+    .headline {
+      margin-bottom: 18px;
+      line-height: 1.35;
     }
 
     .ticker {
-      position:fixed;
-      bottom:0;
-      width:100%;
-      background:#111;
-      padding:10px;
-      overflow:hidden;
-      white-space:nowrap;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: #111;
+      padding: 10px 0;
+      overflow: hidden;
+      white-space: nowrap;
+      border-top: 1px solid #333;
     }
 
     .scroll {
-      display:inline-block;
-      animation: scroll 25s linear infinite;
+      display: inline-block;
+      padding-left: 100%;
+      animation: scroll 28s linear infinite;
+      font-size: 18px;
+      font-weight: 600;
     }
 
     @keyframes scroll {
-      from { transform: translateX(100%); }
+      from { transform: translateX(0); }
       to { transform: translateX(-100%); }
     }
   </style>
@@ -57,63 +77,63 @@
 
 <body>
 
-<div class="header">🔴 LIVE AVIATION OPERATIONS DESK</div>
+  <div class="header">🔴 LIVE AVIATION OPERATIONS DESK</div>
 
-<div class="container">
+  <div class="container">
+    <div class="left" id="news">
+      Loading aviation updates...
+    </div>
 
-  <div class="left" id="news">
-    Loading aviation updates...
+    <div class="right">
+      <div class="box">⚠ Monitor weather & NOTAM</div>
+      <div class="box">⚡ AOG response priority</div>
+      <div class="box">📦 Check station delays</div>
+    </div>
   </div>
 
-  <div class="right">
-    <div class="box">⚠ Monitor weather & NOTAM</div>
-    <div class="box">⚡ AOG response priority</div>
-    <div class="box">📦 Check station delays</div>
+  <div class="ticker">
+    <div class="scroll" id="ticker">Loading ticker...</div>
   </div>
 
-</div>
+  <script>
+    async function loadNews() {
+      try {
+        const res = await fetch('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent('https://simpleflying.com/feed/'));
+        const data = await res.json();
 
-<div class="ticker">
-  <div class="scroll" id="ticker">Loading ticker...</div>
-</div>
+        if (!data.items || !data.items.length) {
+          throw new Error('No items returned');
+        }
 
-<script>
-async function loadNews() {
-  try {
-    const res = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://simpleflying.com/feed/'));
-    const data = await res.json();
+        let headlines = '';
+        let ticker = '';
 
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(data.contents, "text/xml");
+        data.items.forEach((item, index) => {
+          if (index < 6) {
+            headlines += '<div class="headline">✈ ' + item.title + '</div>';
+          }
+          if (index < 10) {
+            ticker += ' ✈ ' + item.title + ' • ';
+          }
+        });
 
-    const items = xml.querySelectorAll("item");
+        ticker += ' ⚠ Weather disruptions possible • ';
+        ticker += ' ⚡ AOG response time matters more than rate • ';
+        ticker += ' 📦 Monitor station handling and route restrictions • ';
 
-    let headlines = "";
-    let ticker = "";
+        document.getElementById('news').innerHTML = headlines;
+        document.getElementById('ticker').innerHTML = ticker;
 
-    items.forEach((el, index) => {
-      if (index < 6) {
-        headlines += "<p>✈ " + el.querySelector("title").textContent + "</p>";
+      } catch (e) {
+        document.getElementById('news').innerHTML = '<div class="headline">Error loading data</div>';
+        document.getElementById('ticker').innerHTML = '⚠ Feed unavailable • Please check again shortly •';
+        console.error('Feed load error:', e);
       }
-      if (index < 10) {
-        ticker += " ✈ " + el.querySelector("title").textContent + " • ";
-      }
-    });
+    }
 
-    ticker += " ⚠ Weather disruptions possible • ";
-    ticker += " ⚡ AOG response time matters more than rate • ";
-
-    document.getElementById("news").innerHTML = headlines;
-    document.getElementById("ticker").innerHTML = ticker;
-
-  } catch (e) {
-    document.getElementById("news").innerHTML = "Error loading data";
-  }
-}
-
-loadNews();
-setInterval(loadNews, 900000);
-</script>
+    loadNews();
+    setInterval(loadNews, 900000);
+  </script>
 
 </body>
 </html>
