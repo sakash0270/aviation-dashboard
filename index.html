@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Aviation Ops Dashboard</title>
+  <meta http-equiv="refresh" content="900">
+  <style>
+    body { margin:0; font-family: Arial; background:#000; color:#fff; }
+
+    .header {
+      background: linear-gradient(to right, red, orange);
+      padding: 15px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .container { display:flex; }
+
+    .left {
+      width:70%;
+      padding:20px;
+      font-size:28px;
+    }
+
+    .right {
+      width:30%;
+      padding:20px;
+      background:#111;
+    }
+
+    .box {
+      margin-bottom:15px;
+      padding:10px;
+      border:1px solid #333;
+    }
+
+    .ticker {
+      position:fixed;
+      bottom:0;
+      width:100%;
+      background:#111;
+      padding:10px;
+      overflow:hidden;
+      white-space:nowrap;
+    }
+
+    .scroll {
+      display:inline-block;
+      animation: scroll 25s linear infinite;
+    }
+
+    @keyframes scroll {
+      from { transform: translateX(100%); }
+      to { transform: translateX(-100%); }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="header">🔴 LIVE AVIATION OPERATIONS DESK</div>
+
+<div class="container">
+
+  <div class="left" id="news">
+    Loading aviation updates...
+  </div>
+
+  <div class="right">
+    <div class="box">⚠ Monitor weather & NOTAM</div>
+    <div class="box">⚡ AOG response priority</div>
+    <div class="box">📦 Check station delays</div>
+  </div>
+
+</div>
+
+<div class="ticker">
+  <div class="scroll" id="ticker">Loading ticker...</div>
+</div>
+
+<script>
+async function loadNews() {
+  try {
+    const res = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://simpleflying.com/feed/'));
+    const data = await res.json();
+
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(data.contents, "text/xml");
+
+    const items = xml.querySelectorAll("item");
+
+    let headlines = "";
+    let ticker = "";
+
+    items.forEach((el, index) => {
+      if (index < 6) {
+        headlines += "<p>✈ " + el.querySelector("title").textContent + "</p>";
+      }
+      if (index < 10) {
+        ticker += " ✈ " + el.querySelector("title").textContent + " • ";
+      }
+    });
+
+    ticker += " ⚠ Weather disruptions possible • ";
+    ticker += " ⚡ AOG response time matters more than rate • ";
+
+    document.getElementById("news").innerHTML = headlines;
+    document.getElementById("ticker").innerHTML = ticker;
+
+  } catch (e) {
+    document.getElementById("news").innerHTML = "Error loading data";
+  }
+}
+
+loadNews();
+setInterval(loadNews, 900000);
+</script>
+
+</body>
+</html>
