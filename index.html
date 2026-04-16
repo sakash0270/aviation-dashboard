@@ -1,139 +1,999 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Aviation Ops Dashboard</title>
-  <meta http-equiv="refresh" content="900">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Aviation Operations Newsroom</title>
+  <meta http-equiv="refresh" content="3600" />
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #000;
-      color: #fff;
+    :root{
+      --bg:#030712;
+      --panel:#0f172a;
+      --panel2:#111827;
+      --border:rgba(255,255,255,.09);
+      --text:#f8fafc;
+      --muted:#94a3b8;
+      --red:#dc2626;
+      --orange:#f97316;
+      --sky:#38bdf8;
+      --amber:#f59e0b;
+      --green:#22c55e;
     }
 
-    .header {
-      background: linear-gradient(to right, red, orange);
-      padding: 15px;
-      font-size: 24px;
-      font-weight: bold;
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at top right, rgba(56,189,248,.10), transparent 28%),
+        linear-gradient(135deg,#020617,#0f172a,#172554);
+      color:var(--text);
+      font-family:Arial,Helvetica,sans-serif;
     }
 
-    .container {
-      display: flex;
-      min-height: calc(100vh - 60px);
-      padding-bottom: 50px;
+    body{
+      display:flex;
+      flex-direction:column;
     }
 
-    .left {
-      width: 70%;
-      padding: 20px;
-      font-size: 28px;
+    .wrap{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      padding:12px;
+      gap:12px;
+      min-height:0;
     }
 
-    .right {
-      width: 30%;
-      padding: 20px;
-      background: #111;
+    .topbar{
+      display:grid;
+      grid-template-columns: 2.2fr 1fr .7fr;
+      gap:12px;
     }
 
-    .box {
-      margin-bottom: 15px;
-      padding: 12px;
-      border: 1px solid #333;
-      border-radius: 8px;
-      font-size: 20px;
+    .hero,
+    .timebox,
+    .statusbox,
+    .metric,
+    .panel,
+    .sidecard{
+      border:1px solid var(--border);
+      border-radius:18px;
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
     }
 
-    .headline {
-      margin-bottom: 18px;
-      line-height: 1.35;
+    .hero{
+      background:linear-gradient(90deg,var(--red),#ef4444,var(--orange));
+      padding:14px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      min-height:82px;
     }
 
-    .ticker {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      background: #111;
-      padding: 10px 0;
-      overflow: hidden;
-      white-space: nowrap;
-      border-top: 1px solid #333;
+    .hero .kicker{
+      font-size:11px;
+      letter-spacing:.28em;
+      text-transform:uppercase;
+      opacity:.95;
+      margin-bottom:6px;
+      font-weight:700;
     }
 
-    .scroll {
-      display: inline-block;
-      padding-left: 100%;
-      animation: scroll 28s linear infinite;
-      font-size: 18px;
-      font-weight: 600;
+    .hero .title{
+      font-size:28px;
+      font-weight:800;
+      line-height:1.05;
     }
 
-    @keyframes scroll {
-      from { transform: translateX(0); }
-      to { transform: translateX(-100%); }
+    .hero .showing{
+      text-align:right;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .timebox,.statusbox{
+      background:rgba(2,6,23,.82);
+      padding:14px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      min-height:82px;
+    }
+
+    .label{
+      font-size:11px;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:#bae6fd;
+      font-weight:700;
+      margin-bottom:6px;
+    }
+
+    .time{
+      font-size:28px;
+      font-weight:800;
+      text-align:right;
+    }
+
+    .date{
+      font-size:13px;
+      color:var(--muted);
+      text-align:right;
+    }
+
+    .statusbox{
+      flex-direction:column;
+      align-items:flex-start;
+      justify-content:center;
+    }
+
+    .live-dot{
+      display:inline-block;
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background:var(--green);
+      margin-right:8px;
+      box-shadow:0 0 12px rgba(34,197,94,.9);
+    }
+
+    .metrics{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+    }
+
+    .metric{
+      background:rgba(15,23,42,.82);
+      padding:14px 16px;
+      min-height:86px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .metric .m-title{
+      font-size:11px;
+      color:var(--muted);
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      font-weight:700;
+      margin-bottom:8px;
+    }
+
+    .metric .m-value{
+      font-size:34px;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .metric .m-icon{
+      font-size:28px;
+      opacity:.95;
+    }
+
+    .main{
+      flex:1;
+      min-height:0;
+      display:grid;
+      grid-template-columns: 2.15fr 1fr;
+      gap:12px;
+    }
+
+    .panel{
+      background:linear-gradient(180deg,rgba(15,23,42,.95),rgba(2,6,23,.98));
+      padding:16px;
+      position:relative;
+      overflow:hidden;
+      min-height:0;
+    }
+
+    .panel::after{
+      content:"";
+      position:absolute;
+      right:-60px;
+      top:-60px;
+      width:180px;
+      height:180px;
+      border-radius:999px;
+      background:rgba(239,68,68,.08);
+      filter:blur(8px);
+      pointer-events:none;
+    }
+
+    .side{
+      display:grid;
+      grid-template-rows: repeat(3,1fr);
+      gap:12px;
+      min-height:0;
+    }
+
+    .sidecard{
+      background:rgba(15,23,42,.82);
+      padding:14px;
+      overflow:hidden;
+    }
+
+    .card-title,
+    .panel-kicker{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.22em;
+      font-weight:700;
+      color:#bae6fd;
+      margin-bottom:10px;
+    }
+
+    .panel-title{
+      font-size:50px;
+      line-height:1.04;
+      font-weight:900;
+      max-width:95%;
+      margin:0 0 14px;
+    }
+
+    .panel-desc{
+      font-size:20px;
+      line-height:1.35;
+      color:#dbeafe;
+      max-width:95%;
+      margin-bottom:14px;
+    }
+
+    .badges{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .badge{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.06);
+      color:#e2e8f0;
+      font-weight:700;
+    }
+
+    .badge.red{
+      background:rgba(220,38,38,.18);
+      border-color:rgba(248,113,113,.35);
+      color:#fecaca;
+    }
+
+    .badge.sky{
+      background:rgba(56,189,248,.14);
+      border-color:rgba(56,189,248,.25);
+      color:#bae6fd;
+    }
+
+    .badge.amber{
+      background:rgba(245,158,11,.14);
+      border-color:rgba(245,158,11,.25);
+      color:#fde68a;
+    }
+
+    .subgrid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-top:16px;
+    }
+
+    .mini{
+      background:rgba(15,23,42,.8);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:12px;
+      min-height:132px;
+    }
+
+    .mini .mini-kicker{
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      color:#bae6fd;
+      margin-bottom:8px;
+      font-weight:700;
+    }
+
+    .mini .mini-text{
+      font-size:20px;
+      line-height:1.2;
+      font-weight:700;
+    }
+
+    .mini .mini-source{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:10px;
+    }
+
+    .list{
+      display:grid;
+      gap:10px;
+    }
+
+    .alert-item,
+    .region-item,
+    .source-item{
+      background:rgba(15,23,42,.8);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px;
+    }
+
+    .alert-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+    }
+
+    .alert-text{
+      font-size:22px;
+      line-height:1.2;
+      font-weight:700;
+    }
+
+    .alert-desc{
+      font-size:14px;
+      color:#cbd5e1;
+      line-height:1.35;
+      margin-top:8px;
+    }
+
+    .pill{
+      white-space:nowrap;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      border:1px solid transparent;
+    }
+
+    .high{background:rgba(220,38,38,.18);border-color:rgba(248,113,113,.35);color:#fecaca}
+    .medium{background:rgba(245,158,11,.18);border-color:rgba(251,191,36,.35);color:#fde68a}
+    .low{background:rgba(56,189,248,.18);border-color:rgba(56,189,248,.35);color:#bae6fd}
+
+    .region-item .region-kicker{
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      color:#bae6fd;
+      font-weight:700;
+      margin-bottom:8px;
+    }
+
+    .region-item .region-text{
+      font-size:22px;
+      line-height:1.2;
+      font-weight:700;
+    }
+
+    .region-item .region-desc{
+      font-size:14px;
+      line-height:1.35;
+      color:#cbd5e1;
+      margin-top:8px;
+    }
+
+    .snapshot-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      height:100%;
+    }
+
+    .snapshot-card{
+      background:rgba(15,23,42,.82);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:16px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+
+    .snapshot-card .s-title{
+      font-size:11px;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      font-weight:700;
+    }
+
+    .snapshot-card .s-value{
+      font-size:58px;
+      font-weight:900;
+      line-height:1;
+      margin:12px 0;
+    }
+
+    .snapshot-card .s-note{
+      font-size:14px;
+      color:#cbd5e1;
+      line-height:1.35;
+    }
+
+    .sidecard .muted{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.45;
+    }
+
+    .sources-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:8px;
+    }
+
+    .source-item{
+      font-size:13px;
+      color:#e2e8f0;
+      text-align:center;
+      padding:10px 8px;
+    }
+
+    .simple-list{
+      display:grid;
+      gap:8px;
+      margin-top:10px;
+    }
+
+    .simple-row{
+      padding:10px 12px;
+      border-radius:12px;
+      background:rgba(15,23,42,.8);
+      border:1px solid var(--border);
+      font-size:14px;
+      line-height:1.35;
+      color:#e2e8f0;
+    }
+
+    .ticker{
+      height:54px;
+      background:#020617;
+      border-top:1px solid rgba(248,113,113,.25);
+      display:flex;
+      align-items:center;
+      overflow:hidden;
+      flex-shrink:0;
+    }
+
+    .ticker-label{
+      flex-shrink:0;
+      height:100%;
+      display:flex;
+      align-items:center;
+      padding:0 18px;
+      background:linear-gradient(90deg,#b91c1c,#ef4444);
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.24em;
+    }
+
+    .ticker-track{
+      position:relative;
+      overflow:hidden;
+      width:100%;
+      height:100%;
+      display:flex;
+      align-items:center;
+    }
+
+    .ticker-inner{
+      white-space:nowrap;
+      display:inline-block;
+      padding-left:100%;
+      animation:tickerMove 38s linear infinite;
+      font-size:18px;
+      font-weight:700;
+    }
+
+    @keyframes tickerMove{
+      0%{transform:translateX(0)}
+      100%{transform:translateX(-100%)}
+    }
+
+    .ticker-item{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      margin-right:22px;
+    }
+
+    .ticker-badge{
+      border-radius:999px;
+      padding:4px 8px;
+      font-size:10px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      border:1px solid transparent;
+    }
+
+    .ticker-news{background:rgba(56,189,248,.18);border-color:rgba(56,189,248,.35);color:#bae6fd}
+    .ticker-alert{background:rgba(220,38,38,.18);border-color:rgba(248,113,113,.35);color:#fecaca}
+    .ticker-ops{background:rgba(245,158,11,.18);border-color:rgba(251,191,36,.35);color:#fde68a}
+
+    @media (max-width: 1200px){
+      .panel-title{font-size:40px}
+      .panel-desc{font-size:18px}
+      .alert-text,.region-item .region-text{font-size:18px}
+      .mini .mini-text{font-size:17px}
     }
   </style>
 </head>
-
 <body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="hero">
+        <div>
+          <div class="kicker">Breaking News · Live Aviation Desk</div>
+          <div class="title">Office Operations Newsroom</div>
+        </div>
+        <div class="showing">
+          <div style="opacity:.85;text-transform:uppercase;letter-spacing:.16em;font-size:11px;margin-bottom:6px;">Now Showing</div>
+          <div id="showingTitle">Top Aviation Headlines</div>
+        </div>
+      </div>
 
-  <div class="header">🔴 LIVE AVIATION OPERATIONS DESK</div>
+      <div class="timebox">
+        <div>
+          <div class="label">Dubai Time</div>
+        </div>
+        <div>
+          <div class="time" id="dubaiTime">00:00:00</div>
+          <div class="date" id="dubaiDate">Loading date</div>
+        </div>
+      </div>
 
-  <div class="container">
-    <div class="left" id="news">
-      Loading aviation updates...
+      <div class="statusbox">
+        <div class="label">Feed Status</div>
+        <div style="font-weight:800;font-size:20px;"><span class="live-dot"></span>Live</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:6px;" id="feedStatusText">Refresh 15 min</div>
+      </div>
     </div>
 
-    <div class="right">
-      <div class="box">⚠ Monitor weather & NOTAM</div>
-      <div class="box">⚡ AOG response priority</div>
-      <div class="box">📦 Check station delays</div>
+    <div class="metrics">
+      <div class="metric"><div><div class="m-title">Urgent AOG</div><div class="m-value" id="metricAOG">04</div></div><div class="m-icon">✈</div></div>
+      <div class="metric"><div><div class="m-title">Route Issues</div><div class="m-value" id="metricRoutes">00</div></div><div class="m-icon">🗺</div></div>
+      <div class="metric"><div><div class="m-title">Station Delays</div><div class="m-value" id="metricDelays">00</div></div><div class="m-icon">🕒</div></div>
+      <div class="metric"><div><div class="m-title">Security Alerts</div><div class="m-value" id="metricSecurity">00</div></div><div class="m-icon">🛡</div></div>
+    </div>
+
+    <div class="main">
+      <div class="panel" id="mainPanel"></div>
+
+      <div class="side">
+        <div class="sidecard">
+          <div class="card-title">Incidents / Disruptions</div>
+          <div id="sideIncidents" class="simple-list"></div>
+        </div>
+        <div class="sidecard">
+          <div class="card-title">Middle East Focus</div>
+          <div id="sideMiddleEast" class="simple-list"></div>
+        </div>
+        <div class="sidecard">
+          <div class="card-title">Source Slots</div>
+          <div class="sources-grid" id="sourceSlots"></div>
+          <div class="card-title" style="margin-top:14px;">Ops Notes</div>
+          <div class="muted">
+            Mixed ticker includes headlines, alerts, and AOG-style reminders.<br><br>
+            AWB status board can be added in the next phase.
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="ticker">
-    <div class="scroll" id="ticker">Loading ticker...</div>
+    <div class="ticker-label">Live</div>
+    <div class="ticker-track">
+      <div class="ticker-inner" id="tickerInner">Loading ticker…</div>
+    </div>
   </div>
 
   <script>
+    const sourceNames = ["Simple Flying", "System"];
+    const defaultMiddleEast = [
+      {
+        title: "Dubai and Abu Dhabi cargo demand remains firm on urgent aerospace lanes.",
+        desc: "Regional demand signals remain important for time-critical cargo response."
+      },
+      {
+        title: "Regional carriers adjust schedules around route and slot constraints.",
+        desc: "Routing and slot pressure can affect service consistency."
+      },
+      {
+        title: "AOG response times remain critical for Gulf-based operators.",
+        desc: "Operations speed continues to matter most in critical movements."
+      }
+    ];
+
+    let headlines = [];
+    let incidents = [];
+    let middleEastItems = [];
+    let tickerItems = [];
+    let currentPanel = 0;
+    let stats = {
+      routeIssues: 0,
+      stationDelays: 0,
+      securityAlerts: 0
+    };
+
+    const panels = [
+      { key: "headlines", title: "Top Aviation Headlines" },
+      { key: "incidents", title: "Incidents & Disruptions" },
+      { key: "middleEast", title: "Middle East Focus" },
+      { key: "summary", title: "Operations Snapshot" }
+    ];
+
+    function updateClock() {
+      const now = new Date();
+      document.getElementById("dubaiTime").textContent =
+        now.toLocaleTimeString("en-GB", { hour12: false, timeZone: "Asia/Dubai" });
+      document.getElementById("dubaiDate").textContent =
+        now.toLocaleDateString("en-GB", {
+          weekday: "long",
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          timeZone: "Asia/Dubai"
+        });
+    }
+
+    function renderSources() {
+      const el = document.getElementById("sourceSlots");
+      el.innerHTML = sourceNames
+        .map(name => `<div class="source-item">${escapeHtml(name)}</div>`)
+        .join("");
+    }
+
+    function stripHtml(html) {
+      const tmp = document.createElement("div");
+      tmp.innerHTML = html || "";
+      return (tmp.textContent || tmp.innerText || "").trim();
+    }
+
+    function shorten(text, max = 180) {
+      if (!text) return "";
+      const clean = text.replace(/\s+/g, " ").trim();
+      return clean.length > max ? clean.slice(0, max).trim() + "..." : clean;
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function classifySeverity(text) {
+      const t = text.toLowerCase();
+      if (/(emergency|crash|accident|fire|closure|closed|grounded|collision|evacuation|security|attack|missile|bomb|explosion)/.test(t)) return "High";
+      if (/(delay|delays|disruption|weather|storm|diversion|restricted|restriction|cancel|congestion|slot|airspace)/.test(t)) return "Medium";
+      return "Low";
+    }
+
+    function buildTicker() {
+      const extra = [
+        { type: "ops", text: "AOG response time matters more than rate in critical movements." },
+        { type: "alert", text: "Monitor NOTAM, weather, airport congestion, and security advisories together." },
+        { type: "ops", text: "Keep handler, broker, and station escalation contacts ready for rapid action." }
+      ];
+      const all = [...tickerItems, ...extra];
+
+      document.getElementById("tickerInner").innerHTML = all.map(item => {
+        const cls = item.type === "alert" ? "ticker-alert" : item.type === "ops" ? "ticker-ops" : "ticker-news";
+        return `
+          <span class="ticker-item">
+            <span class="ticker-badge ${cls}">${escapeHtml(item.type)}</span>
+            <span>${escapeHtml(item.text)}</span>
+          </span>
+        `;
+      }).join("");
+    }
+
+    function renderSidePanels() {
+      const incidentsEl = document.getElementById("sideIncidents");
+      const middleEastEl = document.getElementById("sideMiddleEast");
+
+      const inc = incidents.length ? incidents.slice(0,3) : [
+        { title: "No major disruption headlines currently classified.", desc: "Dashboard will continue monitoring live feed items." }
+      ];
+
+      incidentsEl.innerHTML = inc.map(item => `
+        <div class="simple-row">
+          <div style="font-weight:700;">${escapeHtml(item.title)}</div>
+          <div style="margin-top:6px;color:#94a3b8;font-size:12px;line-height:1.35;">${escapeHtml(item.desc || "")}</div>
+        </div>
+      `).join("");
+
+      const me = middleEastItems.length ? middleEastItems.slice(0,3) : defaultMiddleEast;
+      middleEastEl.innerHTML = me.map(item => `
+        <div class="simple-row">
+          <div style="font-weight:700;">${escapeHtml(item.title)}</div>
+          <div style="margin-top:6px;color:#94a3b8;font-size:12px;line-height:1.35;">${escapeHtml(item.desc || "")}</div>
+        </div>
+      `).join("");
+    }
+
+    function updateMetrics() {
+      document.getElementById("metricRoutes").textContent = String(stats.routeIssues).padStart(2, "0");
+      document.getElementById("metricDelays").textContent = String(stats.stationDelays).padStart(2, "0");
+      document.getElementById("metricSecurity").textContent = String(stats.securityAlerts).padStart(2, "0");
+    }
+
+    function renderHeadlinesPanel() {
+      const lead = headlines[0] || {
+        title: "Loading latest aviation headline...",
+        source: "Feed",
+        tag: "Global",
+        desc: "Fetching live aviation feed items."
+      };
+
+      const others = headlines.slice(1, 4);
+
+      return `
+        <div class="panel-kicker">Top Story</div>
+        <div class="panel-title">${escapeHtml(lead.title)}</div>
+        <div class="panel-desc">${escapeHtml(lead.desc || "")}</div>
+        <div class="badges">
+          <div class="badge red">Breaking</div>
+          <div class="badge sky">Source: ${escapeHtml(lead.source || "Feed")}</div>
+          <div class="badge amber">Tag: ${escapeHtml(lead.tag || "Aviation")}</div>
+        </div>
+        <div style="font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.18em;font-weight:700;">
+          Operations-first newsroom layout for wall display
+        </div>
+        <div class="subgrid">
+          ${others.map(item => `
+            <div class="mini">
+              <div class="mini-kicker">${escapeHtml(item.tag || "Update")}</div>
+              <div class="mini-text">${escapeHtml(item.title)}</div>
+              <div class="mini-source">${escapeHtml(item.source || "Feed")}</div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderIncidentsPanel() {
+      const items = incidents.length ? incidents : [
+        { title: "Monitoring disruptions and incident-related headlines from live feeds.", desc: "Weather-linked and route-related operational risks will appear here.", severity: "Medium" }
+      ];
+
+      return `
+        <div class="panel-kicker" style="color:#fca5a5;">Current Operational Alerts</div>
+        <div class="list">
+          ${items.slice(0,4).map(item => `
+            <div class="alert-item">
+              <div class="alert-row">
+                <div style="flex:1;">
+                  <div class="alert-text">${escapeHtml(item.title)}</div>
+                  <div class="alert-desc">${escapeHtml(item.desc || "")}</div>
+                </div>
+                <div class="pill ${item.severity.toLowerCase()}">${escapeHtml(item.severity)}</div>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderMiddleEastPanel() {
+      const items = middleEastItems.length ? middleEastItems : defaultMiddleEast;
+
+      return `
+        <div class="panel-kicker">Regional Priority View</div>
+        <div class="list">
+          ${items.slice(0,3).map((item, idx) => `
+            <div class="region-item">
+              <div class="region-kicker">Middle East Update ${idx + 1}</div>
+              <div class="region-text">${escapeHtml(item.title)}</div>
+              <div class="region-desc">${escapeHtml(item.desc || "")}</div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderSummaryPanel() {
+      return `
+        <div class="snapshot-grid">
+          <div class="snapshot-card">
+            <div class="s-title">Urgent AOG</div>
+            <div class="s-value">04</div>
+            <div class="s-note">Placeholder for future live urgent-job or escalation count.</div>
+          </div>
+          <div class="snapshot-card">
+            <div class="s-title">Route Issues</div>
+            <div class="s-value">${String(stats.routeIssues).padStart(2, "0")}</div>
+            <div class="s-note">Count based on route, airspace, closure, or restriction-related headlines.</div>
+          </div>
+          <div class="snapshot-card">
+            <div class="s-title">Station Delays</div>
+            <div class="s-value">${String(stats.stationDelays).padStart(2, "0")}</div>
+            <div class="s-note">Count based on delay, congestion, slot, or disruption-related headlines.</div>
+          </div>
+          <div class="snapshot-card">
+            <div class="s-title">Security / Compliance</div>
+            <div class="s-value">${String(stats.securityAlerts).padStart(2, "0")}</div>
+            <div class="s-note">Count based on security, attack, missile, bomb, or evacuation-related headlines.</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPanel() {
+      const panel = panels[currentPanel];
+      document.getElementById("showingTitle").textContent = panel.title;
+
+      let html = "";
+      if (panel.key === "headlines") html = renderHeadlinesPanel();
+      if (panel.key === "incidents") html = renderIncidentsPanel();
+      if (panel.key === "middleEast") html = renderMiddleEastPanel();
+      if (panel.key === "summary") html = renderSummaryPanel();
+
+      document.getElementById("mainPanel").innerHTML = html;
+    }
+
+    function rotatePanel() {
+      currentPanel = (currentPanel + 1) % panels.length;
+      renderPanel();
+    }
+
+    async function fetchFeed(url, sourceLabel) {
+      const api = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(url);
+      const res = await fetch(api);
+      const data = await res.json();
+
+      if (!data.items || !Array.isArray(data.items)) {
+        throw new Error("No items returned");
+      }
+
+      return data.items.map(item => ({
+        title: (item.title || "").trim(),
+        description: stripHtml(item.description || item.content || ""),
+        source: sourceLabel
+      }));
+    }
+
+    function classifyTag(text) {
+      if (/(middle east|dubai|abu dhabi|gulf|qatar|saudi|riyadh|jeddah|doha|oman|kuwait|bahrain|sharjah|dxb|auh)/i.test(text)) {
+        return "Regional";
+      }
+      if (/(incident|emergency|delay|diversion|weather|storm|closure|restricted|restriction|cancel|congestion|airspace)/i.test(text)) {
+        return "Alert";
+      }
+      return "Global";
+    }
+
     async function loadNews() {
       try {
-        const res = await fetch('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent('https://simpleflying.com/feed/'));
-        const data = await res.json();
+        document.getElementById("feedStatusText").textContent = "Refreshing...";
 
-        if (!data.items || !data.items.length) {
-          throw new Error('No items returned');
-        }
+        const feedItems = await fetchFeed("https://simpleflying.com/feed/", "Simple Flying");
 
-        let headlines = '';
-        let ticker = '';
+        const unique = [];
+        const seen = new Set();
 
-        data.items.forEach((item, index) => {
-          if (index < 6) {
-            headlines += '<div class="headline">✈ ' + item.title + '</div>';
-          }
-          if (index < 10) {
-            ticker += ' ✈ ' + item.title + ' • ';
+        feedItems.forEach(item => {
+          const key = (item.title || "").toLowerCase();
+          if (item.title && !seen.has(key)) {
+            seen.add(key);
+            unique.push(item);
           }
         });
 
-        ticker += ' ⚠ Weather disruptions possible • ';
-        ticker += ' ⚡ AOG response time matters more than rate • ';
-        ticker += ' 📦 Monitor station handling and route restrictions • ';
+        headlines = unique.slice(0, 8).map(item => ({
+          title: item.title,
+          source: item.source,
+          tag: classifyTag(item.title + " " + item.description),
+          desc: shorten(item.description || "Latest aviation update from live feed.", 180)
+        }));
 
-        document.getElementById('news').innerHTML = headlines;
-        document.getElementById('ticker').innerHTML = ticker;
+        incidents = unique
+          .filter(item => /(incident|emergency|delay|delays|diversion|weather|storm|closure|restricted|restriction|cancel|congestion|airspace|grounded|security|attack|missile|bomb|evacuation)/i.test(item.title + " " + item.description))
+          .slice(0, 4)
+          .map(item => ({
+            title: item.title,
+            desc: shorten(item.description || "Operationally relevant disruption headline.", 120),
+            severity: classifySeverity(item.title + " " + item.description)
+          }));
 
+        middleEastItems = unique
+          .filter(item => /(middle east|dubai|abu dhabi|gulf|qatar|saudi|riyadh|jeddah|doha|oman|kuwait|bahrain|sharjah|dxb|auh|emirates|etihad)/i.test(item.title + " " + item.description))
+          .slice(0, 3)
+          .map(item => ({
+            title: item.title,
+            desc: shorten(item.description || "Regional aviation update relevant to Gulf operations.", 120)
+          }));
+
+        tickerItems = unique.slice(0, 8).map(item => {
+          const type = /(incident|emergency|delay|diversion|weather|closure|restricted|restriction|cancel|congestion|security|attack|missile|bomb)/i.test(item.title + " " + item.description)
+            ? "alert"
+            : "news";
+          return { type, text: item.title };
+        });
+
+        stats.routeIssues = unique.filter(item => /(route|airspace|closure|closed|restricted|restriction|sector|corridor)/i.test(item.title + " " + item.description)).length;
+        stats.stationDelays = unique.filter(item => /(delay|delays|congestion|slot|ground handling|disruption|queue)/i.test(item.title + " " + item.description)).length;
+        stats.securityAlerts = unique.filter(item => /(security|attack|missile|bomb|evacuation|threat)/i.test(item.title + " " + item.description)).length;
+
+        buildTicker();
+        renderSidePanels();
+        updateMetrics();
+        renderPanel();
+
+        document.getElementById("feedStatusText").textContent = "Refresh 15 min";
       } catch (e) {
-        document.getElementById('news').innerHTML = '<div class="headline">Error loading data</div>';
-        document.getElementById('ticker').innerHTML = '⚠ Feed unavailable • Please check again shortly •';
-        console.error('Feed load error:', e);
+        if (!headlines.length) {
+          headlines = [
+            {
+              title: "Live aviation feed temporarily unavailable. Retrying automatically.",
+              source: "System",
+              tag: "Status",
+              desc: "The page is working, but the feed provider did not return data."
+            },
+            {
+              title: "Check internet access and feed availability.",
+              source: "System",
+              tag: "Support",
+              desc: "The dashboard will try again automatically."
+            },
+            {
+              title: "Ticker and panel rotation remain active.",
+              source: "System",
+              tag: "Support",
+              desc: "UI is healthy even while feed is unavailable."
+            },
+            {
+              title: "Right-side panels can still be refined further.",
+              source: "System",
+              tag: "Support",
+              desc: "Next phase can add additional sources and better filtering."
+            }
+          ];
+        }
+
+        if (!tickerItems.length) {
+          tickerItems = [
+            { type: "alert", text: "Feed connection issue detected. Dashboard will retry automatically." }
+          ];
+        }
+
+        buildTicker();
+        renderSidePanels();
+        updateMetrics();
+        renderPanel();
+        document.getElementById("feedStatusText").textContent = "Feed issue - retrying";
+        console.error("Feed load error:", e);
       }
     }
+
+    renderSources();
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    renderSidePanels();
+    renderPanel();
+    setInterval(rotatePanel, 12000);
 
     loadNews();
     setInterval(loadNews, 900000);
   </script>
-
 </body>
 </html>
