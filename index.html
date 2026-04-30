@@ -1,212 +1,525 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Aviation Ops Intelligence Screen</title>
+<meta charset="UTF-8">
+<title>Aviation Ops Intelligence Dashboard V4</title>
 <meta http-equiv="refresh" content="3600">
-
 <style>
+*{box-sizing:border-box}
 body{
-margin:0;
-font-family:Arial;
-background:#000;
-color:#fff;
-overflow:hidden;
+  margin:0;
+  background:#020617;
+  color:white;
+  font-family:Arial,Helvetica,sans-serif;
+  overflow:hidden;
 }
-
 .header{
-background:linear-gradient(to right, red, orange);
-padding:12px;
-font-size:22px;
-font-weight:bold;
+  height:72px;
+  background:linear-gradient(90deg,#b91c1c,#ef4444,#f97316);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 24px;
+  font-weight:bold;
 }
-
-.main{
-display:flex;
-height:calc(100vh - 80px);
+.title{font-size:28px}
+.time{font-size:22px}
+.grid{
+  height:calc(100vh - 126px);
+  display:grid;
+  grid-template-columns:70% 30%;
 }
-
 .left{
-width:70%;
-padding:20px;
+  padding:18px;
+  background:linear-gradient(135deg,#020617,#0f172a);
 }
-
 .right{
-width:30%;
-background:#111;
-padding:15px;
+  padding:14px;
+  background:#0b1120;
+  border-left:1px solid #1e293b;
 }
-
-.box{
-margin-bottom:12px;
-padding:10px;
-border:1px solid #333;
-border-radius:8px;
-font-size:16px;
+.panel-title{
+  font-size:13px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:#93c5fd;
+  margin-bottom:12px;
 }
-
-.big{
-font-size:34px;
-font-weight:bold;
-margin-bottom:15px;
+.big-headline{
+  font-size:42px;
+  font-weight:900;
+  line-height:1.1;
+  margin-bottom:16px;
 }
-
-.small{
-font-size:18px;
-margin-bottom:10px;
+.desc{
+  font-size:20px;
+  color:#cbd5e1;
+  line-height:1.35;
+  margin-bottom:18px;
 }
-
+.badge{
+  display:inline-block;
+  padding:6px 12px;
+  border-radius:20px;
+  margin-right:8px;
+  font-size:13px;
+  font-weight:bold;
+}
+.red{background:#7f1d1d;color:#fecaca}
+.blue{background:#075985;color:#bae6fd}
+.amber{background:#78350f;color:#fde68a}
+.cards{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-top:20px;
+}
+.card,.sidebox{
+  background:rgba(15,23,42,.9);
+  border:1px solid #1e293b;
+  border-radius:14px;
+  padding:14px;
+}
+.card h3{
+  font-size:13px;
+  color:#93c5fd;
+  margin:0 0 10px;
+}
+.card p{
+  font-size:18px;
+  line-height:1.25;
+  margin:0;
+}
+.sidebox{
+  margin-bottom:12px;
+}
+.sidebox h3{
+  margin:0 0 8px;
+  color:#93c5fd;
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:2px;
+}
+.sidebox div{
+  font-size:15px;
+  line-height:1.35;
+}
+.metric-row{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+.metric{
+  background:#0f172a;
+  border:1px solid #1e293b;
+  border-radius:14px;
+  padding:18px;
+}
+.metric span{
+  color:#94a3b8;
+  font-size:13px;
+  text-transform:uppercase;
+}
+.metric strong{
+  display:block;
+  font-size:44px;
+  margin-top:8px;
+}
 .ticker{
-position:fixed;
-bottom:0;
-width:100%;
-background:#111;
-padding:10px;
-white-space:nowrap;
-overflow:hidden;
+  height:54px;
+  background:#000;
+  border-top:1px solid #7f1d1d;
+  display:flex;
+  align-items:center;
+  overflow:hidden;
 }
-
+.live{
+  height:100%;
+  display:flex;
+  align-items:center;
+  padding:0 18px;
+  background:#dc2626;
+  font-weight:900;
+  letter-spacing:3px;
+}
 .scroll{
-display:inline-block;
-padding-left:100%;
-animation:scroll 30s linear infinite;
+  white-space:nowrap;
+  animation:scroll 45s linear infinite;
+  padding-left:100%;
+  font-size:18px;
+  font-weight:bold;
 }
-
 @keyframes scroll{
-from{transform:translateX(0)}
-to{transform:translateX(-100%)}
+  from{transform:translateX(0)}
+  to{transform:translateX(-100%)}
+}
+.accident-mode{
+  background:linear-gradient(135deg,#111827,#450a0a);
+}
+.accident-grid{
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:18px;
+  height:100%;
+}
+.visuals{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-top:18px;
+}
+.visual{
+  height:160px;
+  border-radius:16px;
+  border:1px solid #334155;
+  background:linear-gradient(135deg,#1e293b,#020617);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:12px;
+  color:#cbd5e1;
+  font-size:17px;
+}
+.lesson{
+  background:rgba(0,0,0,.35);
+  border:1px solid #7f1d1d;
+  border-radius:18px;
+  padding:18px;
+}
+.lesson h2{
+  margin-top:0;
+  color:#fecaca;
+}
+.lesson p{
+  font-size:19px;
+  line-height:1.4;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">🔴 LIVE AVIATION OPERATIONS INTELLIGENCE</div>
-
-<div class="main">
-<div class="left" id="mainPanel">Loading...</div>
-
-<div class="right">
-<div class="box" id="incidents">Loading incidents...</div>
-<div class="box" id="middleeast">Loading ME updates...</div>
-<div class="box">⚡ AOG response priority</div>
+<div class="header">
+  <div>
+    <div style="font-size:12px;letter-spacing:4px;">LIVE AVIATION OPS INTELLIGENCE</div>
+    <div class="title">Office Operations Newsroom</div>
+  </div>
+  <div class="time" id="clock">Dubai Time</div>
 </div>
+
+<div class="grid">
+  <div class="left" id="mainPanel">Loading aviation intelligence...</div>
+
+  <div class="right">
+    <div class="sidebox">
+      <h3>Incidents / Disruptions</h3>
+      <div id="sideIncidents">Loading...</div>
+    </div>
+    <div class="sidebox">
+      <h3>Middle East / Gulf</h3>
+      <div id="sideME">Loading...</div>
+    </div>
+    <div class="sidebox">
+      <h3>Cargo / MRO / Ops</h3>
+      <div id="sideOps">Loading...</div>
+    </div>
+    <div class="sidebox">
+      <h3>Source Status</h3>
+      <div id="sourceStatus">Checking sources...</div>
+    </div>
+  </div>
 </div>
 
 <div class="ticker">
-<div class="scroll" id="ticker">Loading...</div>
+  <div class="live">LIVE</div>
+  <div class="scroll" id="ticker">Loading ticker...</div>
 </div>
 
 <script>
+let pool=[];
+let currentPanel=0;
+let accidentActive=false;
+let accidentIndex=0;
+let usedAccidents=[];
 
-let dataPool = [];
-let panelIndex = 0;
-
-const feeds = [
-"https://api.rss2json.com/v1/api.json?rss_url=https://simpleflying.com/feed/",
-"https://api.rss2json.com/v1/api.json?rss_url=https://www.aerotime.aero/rss",
-"https://api.rss2json.com/v1/api.json?rss_url=https://aviation24.be/feed/"
+const feeds=[
+  {name:"Simple Flying",url:"https://simpleflying.com/feed/"},
+  {name:"AeroTime",url:"https://www.aerotime.aero/rss"},
+  {name:"Aviation24",url:"https://www.aviation24.be/feed/"},
+  {name:"AIN Online",url:"https://www.ainonline.com/rss.xml"},
+  {name:"Airways Magazine",url:"https://airwaysmag.com/feed/"},
+  {name:"Aviation A2Z",url:"https://aviationa2z.com/index.php/feed/"},
+  {name:"Unmanned Airspace",url:"https://www.unmannedairspace.info/feed/"}
 ];
 
-async function loadAllFeeds(){
+const accidents=[
+  {
+    title:"Tenerife Airport Disaster – 1977",
+    impact:"Two Boeing 747 aircraft collided on the runway at Los Rodeos Airport, causing the deadliest accident in aviation history.",
+    cause:"Investigation highlighted miscommunication, radio interference, fog, runway confusion, and authority-gradient issues.",
+    lesson:"Clear communication, readback discipline, runway awareness, and CRM became central safety lessons.",
+    visuals:["Runway visibility / fog","Two aircraft movement conflict","Communication breakdown"]
+  },
+  {
+    title:"Air France Flight 447 – 2009",
+    impact:"Airbus A330 crashed into the Atlantic during cruise after loss of reliable airspeed information.",
+    cause:"Pitot tube icing, automation disconnect, startle effect, and inappropriate manual control inputs were identified.",
+    lesson:"Manual flying skills, upset recovery, and understanding automation limits are critical.",
+    visuals:["High altitude weather","Airspeed data failure","Automation transition"]
+  },
+  {
+    title:"British Airways Flight 38 – 2008",
+    impact:"Boeing 777 landed short of Heathrow runway after loss of engine thrust on final approach.",
+    cause:"Ice crystals restricted fuel flow through the fuel-oil heat exchanger.",
+    lesson:"Fuel system behavior in extreme cold conditions led to design and procedure improvements.",
+    visuals:["Final approach","Fuel restriction","Runway short landing"]
+  },
+  {
+    title:"Qantas Flight 32 – 2010",
+    impact:"Airbus A380 suffered an uncontained engine failure shortly after departure from Singapore.",
+    cause:"Manufacturing defect in oil feed pipe caused fire and turbine disc failure.",
+    lesson:"Crew resource management, systems knowledge, and calm checklist handling prevented disaster.",
+    visuals:["Engine failure","System damage","Safe return"]
+  },
+  {
+    title:"United Airlines Flight 232 – 1989",
+    impact:"DC-10 suffered total hydraulic failure after engine fan disk failure.",
+    cause:"Undetected fatigue crack in the fan disk caused catastrophic engine failure.",
+    lesson:"Redundancy, inspection quality, and crew improvisation became major safety lessons.",
+    visuals:["Engine failure","Hydraulic loss","Emergency landing"]
+  }
+];
 
-dataPool = [];
+function clean(html){
+  let d=document.createElement("div");
+  d.innerHTML=html||"";
+  return (d.textContent||d.innerText||"").replace(/\s+/g," ").trim();
+}
+function short(t,n=160){
+  if(!t)return "";
+  return t.length>n?t.slice(0,n)+"...":t;
+}
+function esc(t){
+  return String(t||"").replace(/[&<>"']/g,m=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
+  }[m]));
+}
+function updateClock(){
+  let now=new Date();
+  document.getElementById("clock").innerHTML=
+    now.toLocaleTimeString("en-GB",{timeZone:"Asia/Dubai",hour12:false})+
+    "<br><span style='font-size:13px;color:#fee2e2'>"+
+    now.toLocaleDateString("en-GB",{timeZone:"Asia/Dubai",weekday:"short",day:"2-digit",month:"short"})+
+    "</span>";
+}
+setInterval(updateClock,1000);
+updateClock();
 
-for(let url of feeds){
-try{
-let res = await fetch(url);
-let data = await res.json();
-
-if(data.items){
-data.items.forEach(i=>{
-dataPool.push({
-title:i.title,
-desc:(i.description || "").replace(/<[^>]*>/g,""),
-});
-});
+async function fetchRSS(feed){
+  const api="https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(feed.url);
+  const res=await fetch(api);
+  const data=await res.json();
+  if(!data.items)throw new Error("No items");
+  return data.items.map(i=>({
+    title:i.title||"",
+    desc:clean(i.description||i.content||""),
+    source:feed.name
+  }));
 }
 
-}catch(e){}
+async function loadFeeds(){
+  let results=[];
+  let ok=0,fail=0;
+
+  for(const f of feeds){
+    try{
+      const items=await fetchRSS(f);
+      results=results.concat(items);
+      ok++;
+    }catch(e){
+      fail++;
+    }
+  }
+
+  let seen=new Set();
+  pool=results.filter(i=>{
+    let k=i.title.toLowerCase();
+    if(!k||seen.has(k))return false;
+    seen.add(k);
+    return true;
+  });
+
+  if(!pool.length){
+    pool=[
+      {title:"Live feeds temporarily unavailable. Dashboard will retry automatically.",desc:"Network or feed API may be temporarily unavailable.",source:"System"},
+      {title:"AOG response time matters more than rate in critical movements.",desc:"Operational reminder for urgent aerospace logistics.",source:"Ops Reminder"},
+      {title:"Monitor NOTAM, weather, route restrictions and airport congestion together.",desc:"Operational intelligence cue.",source:"Ops Reminder"}
+    ];
+  }
+
+  document.getElementById("sourceStatus").innerHTML=
+    "Sources working: "+ok+"<br>Sources failed/skipped: "+fail+"<br>Total items: "+pool.length;
+
+  renderAll();
+}
+setInterval(loadFeeds,900000);
+loadFeeds();
+
+function typeOf(item){
+  let t=(item.title+" "+item.desc).toLowerCase();
+  if(/accident|incident|emergency|diversion|delay|storm|weather|closure|airspace|grounded|security|evacuation|collision/.test(t))return"incident";
+  if(/dubai|uae|abu dhabi|gulf|qatar|saudi|riyadh|jeddah|doha|kuwait|oman|bahrain|emirates|etihad/.test(t))return"me";
+  if(/cargo|mro|maintenance|engine|component|aircraft part|supply chain|freight|logistics|aog/.test(t))return"ops";
+  if(/airshow|event|exhibition|conference|expo|summit/.test(t))return"event";
+  return"news";
 }
 
-// remove duplicates
-let seen = new Set();
-dataPool = dataPool.filter(i=>{
-let key=i.title.toLowerCase();
-if(seen.has(key)) return false;
-seen.add(key);
-return true;
-});
-
-updateUI();
-
+function renderAll(){
+  renderPanel();
+  renderSide();
+  renderTicker();
 }
 
-function classify(text){
-text=text.toLowerCase();
+function renderSide(){
+  const inc=pool.filter(i=>typeOf(i)==="incident").slice(0,3);
+  const me=pool.filter(i=>typeOf(i)==="me").slice(0,3);
+  const ops=pool.filter(i=>["ops","event"].includes(typeOf(i))).slice(0,3);
 
-if(text.match(/delay|weather|storm|incident|emergency|diversion|closure/))
-return "incident";
+  document.getElementById("sideIncidents").innerHTML=(inc.length?inc:[{title:"No major disruption item classified currently."}])
+    .map(i=>"⚠ "+esc(short(i.title,90))+"<br><br>").join("");
 
-if(text.match(/dubai|uae|abu dhabi|qatar|saudi|gulf/))
-return "me";
+  document.getElementById("sideME").innerHTML=(me.length?me:[{title:"Monitoring Gulf / Middle East aviation updates."}])
+    .map(i=>"🌍 "+esc(short(i.title,90))+"<br><br>").join("");
 
-return "normal";
+  document.getElementById("sideOps").innerHTML=(ops.length?ops:[{title:"Monitoring cargo, MRO, airline ops, events and supply chain updates."}])
+    .map(i=>"📦 "+esc(short(i.title,90))+"<br><br>").join("");
 }
 
-function updateUI(){
-
-let headlines="";
-let incidents="";
-let me="";
-let ticker="";
-
-let incCount=0;
-let meCount=0;
-
-dataPool.slice(0,12).forEach((item,i)=>{
-
-let type=classify(item.title+" "+item.desc);
-
-// MAIN HEADLINES
-if(i<5){
-headlines+=`<div class="small">✈ ${item.title}</div>`;
+function renderTicker(){
+  let txt=pool.slice(0,18).map(i=>"✈ "+i.title).join(" • ");
+  txt+=" • ⚡ AOG response time matters more than rate • ⚠ Monitor NOTAM, weather, route closures and security advisories •";
+  document.getElementById("ticker").innerHTML=esc(txt);
 }
 
-// INCIDENTS
-if(type==="incident" && incCount<3){
-incidents+=`<div>⚠ ${item.title}</div>`;
-incCount++;
+function renderPanel(){
+  if(accidentActive)return renderAccident();
+
+  const panels=["headlines","incidents","me","ops","metrics"];
+  const p=panels[currentPanel%panels.length];
+
+  if(p==="headlines")renderHeadlines();
+  if(p==="incidents")renderCategory("Incidents & Disruptions","incident","red");
+  if(p==="me")renderCategory("Middle East / Gulf Focus","me","blue");
+  if(p==="ops")renderCategory("Cargo / MRO / Events / Ops","ops","amber",true);
+  if(p==="metrics")renderMetrics();
 }
 
-// MIDDLE EAST
-if(type==="me" && meCount<3){
-me+=`<div>🌍 ${item.title}</div>`;
-meCount++;
+function renderHeadlines(){
+  let lead=pool[0]||{};
+  let others=pool.slice(1,4);
+  document.getElementById("mainPanel").className="left";
+  document.getElementById("mainPanel").innerHTML=`
+    <div class="panel-title">Top Aviation Story</div>
+    <div class="big-headline">${esc(lead.title)}</div>
+    <div class="desc">${esc(short(lead.desc,220))}</div>
+    <span class="badge red">Breaking</span>
+    <span class="badge blue">${esc(lead.source)}</span>
+    <div class="cards">
+      ${others.map(i=>`
+        <div class="card">
+          <h3>${esc(i.source)}</h3>
+          <p>${esc(short(i.title,120))}</p>
+        </div>`).join("")}
+    </div>`;
 }
 
-// TICKER
-ticker+=` ✈ ${item.title} • `;
+function renderCategory(title,type,color,includeEvents=false){
+  let items=pool.filter(i=>{
+    let t=typeOf(i);
+    return includeEvents ? (t==="ops"||t==="event") : t===type;
+  }).slice(0,4);
 
-});
+  if(!items.length)items=[{title:"No specific item classified currently. Monitoring continues.",desc:"Waiting for relevant live feed updates.",source:"System"}];
 
-// fallback
-if(!incidents) incidents="⚠ No major disruptions";
-if(!me) me="🌍 Monitoring Middle East ops";
-
-document.getElementById("mainPanel").innerHTML=headlines;
-document.getElementById("incidents").innerHTML=incidents;
-document.getElementById("middleeast").innerHTML=me;
-
-ticker+=" ⚡ AOG response matters more than rate • ";
-ticker+=" ⚠ Monitor NOTAM & weather • ";
-
-document.getElementById("ticker").innerHTML=ticker;
-
+  document.getElementById("mainPanel").className="left";
+  document.getElementById("mainPanel").innerHTML=`
+    <div class="panel-title">${title}</div>
+    <div class="cards" style="grid-template-columns:repeat(2,1fr)">
+      ${items.map(i=>`
+        <div class="card">
+          <h3>${esc(i.source)}</h3>
+          <p>${esc(short(i.title,140))}</p>
+          <div style="font-size:15px;color:#cbd5e1;margin-top:10px">${esc(short(i.desc,140))}</div>
+        </div>`).join("")}
+    </div>`;
 }
 
-loadAllFeeds();
-setInterval(loadAllFeeds,900000);
+function renderMetrics(){
+  let incident=pool.filter(i=>typeOf(i)==="incident").length;
+  let me=pool.filter(i=>typeOf(i)==="me").length;
+  let ops=pool.filter(i=>["ops","event"].includes(typeOf(i))).length;
+  let total=pool.length;
 
+  document.getElementById("mainPanel").className="left";
+  document.getElementById("mainPanel").innerHTML=`
+    <div class="panel-title">Operations Snapshot</div>
+    <div class="metric-row">
+      <div class="metric"><span>Total Live Items</span><strong>${total}</strong></div>
+      <div class="metric"><span>Disruptions</span><strong>${incident}</strong></div>
+      <div class="metric"><span>Middle East</span><strong>${me}</strong></div>
+      <div class="metric"><span>Cargo / MRO / Events</span><strong>${ops}</strong></div>
+    </div>
+    <div class="cards">
+      <div class="card"><h3>Ops Cue</h3><p>AOG shipments need speed, escalation contacts, and route awareness.</p></div>
+      <div class="card"><h3>Watch</h3><p>Monitor weather, NOTAM, airspace restrictions and airport congestion.</p></div>
+      <div class="card"><h3>Next Phase</h3><p>Outlook Aviation Alerts folder can be connected later as private feed input.</p></div>
+    </div>`;
+}
+
+function renderAccident(){
+  if(usedAccidents.length===accidents.length)usedAccidents=[];
+  let available=accidents.map((_,i)=>i).filter(i=>!usedAccidents.includes(i));
+  let idx=available[Math.floor(Math.random()*available.length)];
+  usedAccidents.push(idx);
+  let a=accidents[idx];
+
+  document.getElementById("mainPanel").className="left accident-mode";
+  document.getElementById("mainPanel").innerHTML=`
+    <div class="panel-title" style="color:#fecaca">15-Second Aviation Safety Learning Slide</div>
+    <div class="accident-grid">
+      <div>
+        <div class="big-headline">${esc(a.title)}</div>
+        <div class="visuals">
+          ${a.visuals.map(v=>`<div class="visual">📷<br>${esc(v)}</div>`).join("")}
+        </div>
+      </div>
+      <div class="lesson">
+        <h2>Impact</h2>
+        <p>${esc(a.impact)}</p>
+        <h2>Cause Found</h2>
+        <p>${esc(a.cause)}</p>
+        <h2>Operational Lesson</h2>
+        <p>${esc(a.lesson)}</p>
+      </div>
+    </div>`;
+}
+
+setInterval(()=>{
+  if(!accidentActive){
+    currentPanel++;
+    renderPanel();
+  }
+},12000);
+
+setInterval(()=>{
+  accidentActive=true;
+  renderPanel();
+  setTimeout(()=>{
+    accidentActive=false;
+    renderPanel();
+  },15000);
+},1800000);
 </script>
 
 </body>
