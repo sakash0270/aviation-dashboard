@@ -152,7 +152,7 @@ async function loadFeeds(){
 
 async function loadAWB(){
   try{
-    const res=await fetch("awb-data.json?cache="+Date.now());
+    const res = await fetch("https://sakash0270.github.io/aviation-dashboard/awb-data.json?cache=" + Date.now());
     awbs=await res.json();
     if(!Array.isArray(awbs))awbs=[];
   }catch(e){
