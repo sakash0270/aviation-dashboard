@@ -2,16 +2,20 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Aviation Ops Dashboard</title>
+<title>Aviation Ops Intelligence</title>
 
 <style>
-body{margin:0;background:#020617;color:white;font-family:Arial}
-.header{background:linear-gradient(90deg,#b91c1c,#ef4444);padding:15px;font-size:22px;font-weight:bold;display:flex;justify-content:space-between}
+body{margin:0;background:#020617;color:#fff;font-family:Arial}
+.header{background:linear-gradient(90deg,#b91c1c,#ef4444,#f97316);padding:15px;font-size:24px;font-weight:bold;display:flex;justify-content:space-between}
 .grid{display:grid;grid-template-columns:70% 30%;height:calc(100vh - 60px)}
 .left{padding:20px}
-.right{padding:15px;border-left:1px solid #333}
-.awb{border:1px solid #38bdf8;padding:15px;border-radius:12px}
+.right{padding:15px;border-left:1px solid #1e293b;display:flex;flex-direction:column;gap:15px}
+.awb{border:1px solid #38bdf8;border-radius:12px;padding:15px;background:#0f172a}
+.panel{background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:12px}
+.news-item{margin-bottom:10px;font-size:18px}
+.ticker{position:absolute;bottom:0;width:100%;background:#000;padding:8px;font-size:14px}
 </style>
+
 </head>
 
 <body>
@@ -22,11 +26,37 @@ body{margin:0;background:#020617;color:white;font-family:Arial}
 </div>
 
 <div class="grid">
-  <div class="left" id="news">Loading news...</div>
-  <div class="right">
-    <div class="awb" id="awb">Loading AWB...</div>
+
+  <div class="left">
+    <div id="news">Loading aviation news...</div>
   </div>
+
+  <div class="right">
+
+    <div class="awb" id="awb">
+      Loading AWB watch...
+    </div>
+
+    <div class="panel">
+      <b>Incidents / Disruptions</b>
+      <div id="incidents">Loading...</div>
+    </div>
+
+    <div class="panel">
+      <b>Middle East / Gulf</b>
+      <div id="me">Loading...</div>
+    </div>
+
+    <div class="panel">
+      <b>Cargo / MRO / Ops</b>
+      <div id="ops">Loading...</div>
+    </div>
+
+  </div>
+
 </div>
+
+<div class="ticker" id="ticker">Loading ticker...</div>
 
 <script>
 
@@ -38,23 +68,45 @@ function updateClock(){
 setInterval(updateClock,1000);
 updateClock();
 
-// NEWS (simple working)
+// NEWS
+let allNews=[];
+
 async function loadNews(){
   try{
     const res = await fetch("https://api.rss2json.com/v1/api.json?rss_url=https://simpleflying.com/feed/");
     const data = await res.json();
-    let html="";
-    data.items.slice(0,5).forEach(i=>{
-      html += "<p>✈️ "+i.title+"</p>";
-    });
-    document.getElementById("news").innerHTML = html;
+    allNews = data.items;
+
+    renderNews();
+    renderTicker();
+
   }catch(e){
-    document.getElementById("news").innerHTML="News failed to load";
+    document.getElementById("news").innerHTML="News failed";
   }
 }
+
+function renderNews(){
+  let html="";
+  allNews.slice(0,6).forEach(n=>{
+    html += <div class="news-item">✈️ ${n.title}</div>;
+  });
+  document.getElementById("news").innerHTML = html;
+
+  // simple categorisation
+  document.getElementById("incidents").innerHTML = allNews.slice(0,3).map(n=>"⚠️ "+n.title).join("<br><br>");
+  document.getElementById("me").innerHTML = allNews.slice(3,6).map(n=>"🌍 "+n.title).join("<br><br>");
+  document.getElementById("ops").innerHTML = allNews.slice(6,9).map(n=>"📦 "+n.title).join("<br><br>");
+}
+
+function renderTicker(){
+  document.getElementById("ticker").innerHTML =
+    allNews.slice(0,10).map(n=>"✈️ "+n.title).join(" • ");
+}
+
 loadNews();
 
-// AWB
+
+// AWB LOGIC (WORKING VERSION)
 let awbs=[];
 let index=0;
 
@@ -95,8 +147,7 @@ function showAWB(){
   index++;
 }
 
-setInterval(showAWB,5000);
-
+setInterval(showAWB,6000);
 loadAWB();
 
 </script>
