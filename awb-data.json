@@ -1,0 +1,26 @@
+[
+  {
+    "awb": "176-12345675",
+    "origin": "DXB",
+    "destination": "FRA",
+    "flight": "EK045",
+    "departure": "2026-05-01T23:45:00+04:00",
+    "arrival": "2026-05-02T06:30:00+02:00"
+  },
+  {
+    "awb": "020-98765432",
+    "origin": "DWC",
+    "destination": "AMS",
+    "flight": "LH8411",
+    "departure": "2026-05-01T21:30:00+04:00",
+    "arrival": "2026-05-02T03:10:00+02:00"
+  },
+  {
+    "awb": "157-45678901",
+    "origin": "AUH",
+    "destination": "LHR",
+    "flight": "EY011",
+    "departure": "2026-05-01T10:00:00+04:00",
+    "arrival": "2026-05-01T14:30:00+01:00"
+  }
+]
