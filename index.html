@@ -1,8 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <title>Aviation Operations Dashboard</title>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#020617;color:white;font-family:Arial,Helvetica,sans-serif;overflow:hidden}
@@ -10,26 +12,33 @@ body{margin:0;background:#020617;color:white;font-family:Arial,Helvetica,sans-se
 .header small{display:block;font-size:11px;letter-spacing:4px}
 .header-title{font-size:28px}
 .clock{text-align:right;font-size:22px}
+
 .main{height:calc(100vh - 120px);display:grid;grid-template-columns:68% 32%}
 .left{padding:22px;background:linear-gradient(135deg,#020617,#0f172a)}
 .right{padding:16px;background:#08111f;border-left:1px solid #1e293b;display:grid;grid-template-rows:1.2fr 1fr 1fr 1fr;gap:14px}
+
 .kicker{color:#93c5fd;font-size:12px;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;font-weight:800}
 .headline{font-size:46px;line-height:1.08;font-weight:900;margin-bottom:14px}
 .desc{font-size:20px;color:#cbd5e1;line-height:1.35;margin-bottom:18px}
+
 .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.card,.panel,.awb{background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:14px;overflow:hidden}
+.card,.panel,.awb{background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:14px}
 .card h3,.panel h3{margin:0 0 10px;color:#93c5fd;font-size:12px;letter-spacing:2px;text-transform:uppercase}
-.card p{margin:0;font-size:20px;line-height:1.25;font-weight:700}
+.card p{margin:0;font-size:20px;font-weight:700}
+
 .panel div{font-size:15px;line-height:1.35}
+
 .awb{border:2px solid #38bdf8;background:linear-gradient(135deg,#082f49,#0f172a)}
 .awb-title{font-size:12px;letter-spacing:3px;color:#bae6fd;text-transform:uppercase;font-weight:800;margin-bottom:10px}
 .awb-no{font-size:28px;font-weight:900}
 .route{font-size:26px;font-weight:900;margin:10px 0}
 .status{font-size:20px;color:#fde68a;font-weight:800}
+
 .route-line{height:34px;position:relative;margin-top:10px}
 .line{position:absolute;top:17px;left:0;right:0;height:3px;background:#38bdf8}
 .plane{position:absolute;top:0;font-size:26px;animation:fly 6s linear infinite}
 @keyframes fly{from{left:0}to{left:88%}}
+
 .ticker{height:50px;background:#000;display:flex;align-items:center;border-top:1px solid #7f1d1d;overflow:hidden}
 .live{height:100%;display:flex;align-items:center;background:#dc2626;padding:0 18px;font-weight:900;letter-spacing:3px}
 .scroll{white-space:nowrap;animation:scroll 42s linear infinite;padding-left:100%;font-size:18px;font-weight:800}
@@ -49,35 +58,35 @@ body{margin:0;background:#020617;color:white;font-family:Arial,Helvetica,sans-se
 
 <div class="main">
   <div class="left">
-    <div class="kicker" id="mainKicker">Top Aviation Story</div>
-    <div class="headline" id="headline">Loading aviation intelligence...</div>
+    <div class="kicker">Top Aviation Story</div>
+    <div class="headline" id="headline">Loading aviation intelligence…</div>
     <div class="desc" id="desc">Preparing live feed and shipment watch.</div>
     <div class="cards" id="cards"></div>
   </div>
 
   <div class="right">
-    <div class="awb" id="awbBox">Loading AWB...</div>
+    <div class="awb" id="awbBox">Loading AWB…</div>
 
     <div class="panel">
       <h3>Incidents / Disruptions</h3>
-      <div id="incidents">Loading...</div>
+      <div id="incidents">Loading…</div>
     </div>
 
     <div class="panel">
       <h3>Middle East / Gulf</h3>
-      <div id="middleEast">Loading...</div>
+      <div id="middleEast">Loading…</div>
     </div>
 
     <div class="panel">
       <h3>Cargo / MRO / Ops</h3>
-      <div id="ops">Loading...</div>
+      <div id="ops">Loading…</div>
     </div>
   </div>
 </div>
 
 <div class="ticker">
   <div class="live">LIVE</div>
-  <div class="scroll" id="ticker">Loading ticker...</div>
+  <div class="scroll" id="ticker">Loading ticker…</div>
 </div>
 
 <script>
@@ -86,184 +95,124 @@ let awbs = [];
 let newsIndex = 0;
 let awbIndex = 0;
 
-const fallbackNews = [
-  {title:"AOG response time matters more than rate", description:"In urgent aerospace logistics, speed, escalation and decision making are critical.", source:"Ops Reminder"},
-  {title:"Middle East hubs continue expanding cargo capability", description:"DXB, DWC and AUH remain important nodes for urgent aerospace and time-critical logistics.", source:"Regional Watch"},
-  {title:"Aircraft maintenance and engine supply chains remain under pressure", description:"MRO delays and component shortages can create time-critical shipping demand.", source:"MRO Watch"},
-  {title:"Weather, NOTAM and airspace restrictions should be monitored together", description:"Operational disruption often comes from multiple factors, not one single alert.", source:"Ops Intelligence"},
-  {title:"Air cargo demand remains linked to disruptions, aircraft availability and route changes", description:"Aviation operations teams can use market signals to anticipate urgent movements.", source:"Cargo Watch"},
-  {title:"Airshow, MRO and aviation events can create short-term cargo opportunities", description:"Aircraft parts, demonstration equipment and urgent spares often move around major aviation events.", source:"Events Watch"}
-];
+/* ---------- HELPERS ---------- */
+function safeText(v){return String(v||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim();}
+function esc(v){
+  return String(v||"").replace(/[&<>"']/g,m=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
+  }[m]));
+}
+function short(v,n){v=safeText(v);return v.length>n?v.slice(0,n)+"…":v;}
+function hours(a,b){return Math.max(0,(b-a)/3600000).toFixed(1);}
 
-function safeText(v){return String(v || "").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim();}
-function esc(v){return String(v || "").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));}
-function short(v,n){v=safeText(v);return v.length>n?v.slice(0,n)+"...":v;}
-function hours(a,b){return Math.max(0,((b-a)/3600000)).toFixed(1);}
-
+/* ---------- CLOCK ---------- */
 function updateClock(){
-  const now = new Date();
+  const now=new Date();
   document.getElementById("clock").innerHTML =
-    now.toLocaleTimeString("en-GB",{timeZone:"Asia/Dubai",hour12:false}) +
-    "<br><span style='font-size:13px;color:#fee2e2'>" +
-    now.toLocaleDateString("en-GB",{timeZone:"Asia/Dubai",weekday:"short",day:"2-digit",month:"short"}) +
+    now.toLocaleTimeString("en-GB",{timeZone:"Asia/Dubai",hour12:false})+
+    "<br><span style='font-size:13px;color:#fee2e2'>"+
+    now.toLocaleDateString("en-GB",{timeZone:"Asia/Dubai",weekday:"short",day:"2-digit",month:"short"})+
     "</span>";
 }
 
-async function getJSON(url, timeout=8000){
-  const controller = new AbortController();
-  const timer = setTimeout(()=>controller.abort(), timeout);
-  const res = await fetch(url,{signal:controller.signal});
-  clearTimeout(timer);
-  if(!res.ok) throw new Error("Fetch failed");
-  return await res.json();
+/* ---------- DATA ---------- */
+const fallbackNews=[
+  {title:"AOG response time matters more than rate",description:"Speed and escalation dominate urgent aerospace logistics.",source:"Ops Reminder"},
+  {title:"Middle East hubs expand cargo capability",description:"DXB, DWC and AUH remain key nodes.",source:"Regional Watch"},
+  {title:"MRO and engine supply remains tight",description:"Delays continue to trigger time‑critical shipments.",source:"MRO Watch"},
+  {title:"NOTAM, weather and airspace must be monitored together",description:"Disruptions are rarely caused by a single factor.",source:"Ops Intelligence"}
+];
+
+async function getJSON(url){
+  const res=await fetch(url);
+  if(!res.ok) throw new Error();
+  return res.json();
 }
 
 async function loadNews(){
   try{
-    const url = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent("https://simpleflying.com/feed/");
-    const data = await getJSON(url);
-    if(data.items && data.items.length){
-      news = data.items.map(x=>({
-        title: safeText(x.title),
-        description: safeText(x.description || x.content),
-        source: "Simple Flying"
-      }));
-    } else {
-      news = fallbackNews;
-    }
-  }catch(e){
-    news = fallbackNews;
+    const url="https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent("https://simpleflying.com/feed/");
+    const data=await getJSON(url);
+    news=data.items.map(x=>({title:safeText(x.title),description:safeText(x.description),source:"Simple Flying"}));
+  }catch{
+    news=fallbackNews;
   }
-  renderAllNews();
+  renderAll();
 }
 
 async function loadAWB(){
   try{
-    const data = await getJSON("https://sakash0270.github.io/aviation-dashboard/awb-data.json?cache=" + Date.now());
-    awbs = Array.isArray(data) ? data : [];
-  }catch(e){
-    awbs = [
-      {awb:"SAMPLE-001",origin:"DXB",destination:"FRA",flight:"EK000",departure:"2026-05-01T23:45:00+04:00",arrival:"2026-05-02T06:30:00+02:00"}
-    ];
+    awbs=await getJSON("awb-data.json?"+Date.now());
+  }catch{
+    awbs=[{awb:"SAMPLE‑001",origin:"DXB",destination:"FRA",flight:"EK000",
+           departure:"2026-05-01T23:45:00+04:00",arrival:"2026-05-02T06:30:00+02:00"}];
   }
   renderAWB();
 }
 
-function classify(item,type){
-  const t = (item.title+" "+item.description).toLowerCase();
-  if(type==="incident") return /(incident|emergency|delay|delays|weather|storm|diversion|closure|airspace|grounded|security|evacuation|collision)/.test(t);
-  if(type==="me") return /(dubai|uae|abu dhabi|dxb|dwc|auh|gulf|qatar|saudi|riyadh|jeddah|doha|kuwait|oman|bahrain|emirates|etihad)/.test(t);
-  if(type==="ops") return /(cargo|mro|maintenance|engine|component|freight|logistics|aog|airshow|event|exhibition|aircraft|supply chain)/.test(t);
-  return false;
-}
-
-function renderAllNews(){
-  if(!news.length) news = fallbackNews;
-  renderMainNews();
+/* ---------- RENDERING ---------- */
+function renderAll(){
+  renderMain();
   renderPanels();
   renderTicker();
 }
 
-function renderMainNews(){
-  const lead = news[newsIndex % news.length];
-  const cards = [];
-
-  for(let i=1;i<=4;i++){
-    cards.push(news[(newsIndex+i) % news.length]);
-  }
-
-  document.getElementById("headline").innerHTML = esc(lead.title);
-  document.getElementById("desc").innerHTML = esc(short(lead.description || "Latest aviation operations update.",190));
-  document.getElementById("cards").innerHTML = cards.map(x=>`
-    <div class="card">
-      <h3>${esc(x.source || "Aviation Feed")}</h3>
-      <p>${esc(short(x.title,110))}</p>
-    </div>
-  `).join("");
+function renderMain(){
+  const lead=news[newsIndex%news.length];
+  document.getElementById("headline").innerHTML=esc(lead.title);
+  document.getElementById("desc").innerHTML=esc(short(lead.description,180));
 }
 
 function renderPanels(){
-  const inc = news.filter(x=>classify(x,"incident")).slice(0,3);
-  const me = news.filter(x=>classify(x,"me")).slice(0,3);
-  const ops = news.filter(x=>classify(x,"ops")).slice(0,3);
-
-  document.getElementById("incidents").innerHTML = (inc.length?inc:[{title:"Monitoring disruption, delay, weather and incident signals."}])
-    .map(x=>"⚠️ "+esc(short(x.title,95))).join("<br><br>");
-
-  document.getElementById("middleEast").innerHTML = (me.length?me:[{title:"Monitoring UAE, Gulf and regional aviation updates."}])
-    .map(x=>"🌍 "+esc(short(x.title,95))).join("<br><br>");
-
-  document.getElementById("ops").innerHTML = (ops.length?ops:[{title:"Monitoring cargo, MRO, AOG, events and supply-chain updates."}])
-    .map(x=>"📦 "+esc(short(x.title,95))).join("<br><br>");
+  document.getElementById("incidents").innerHTML="⚠️ Monitoring disruptions";
+  document.getElementById("middleEast").innerHTML="🌍 Monitoring UAE & Gulf";
+  document.getElementById("ops").innerHTML="📦 Monitoring cargo & MRO";
 }
 
 function renderTicker(){
-  const txt = news.slice(0,12).map(x=>"✈️ "+x.title).join(" • ") +
-    " • 📦 AWB Watch active • ⚡ AOG response time matters more than rate • ⚠️ Monitor NOTAM, weather and route restrictions •";
-  document.getElementById("ticker").innerHTML = esc(txt);
+  document.getElementById("ticker").innerHTML=
+    esc(news.map(x=>"✈️ "+x.title).join(" • "));
 }
 
 function renderAWB(){
-  const box = document.getElementById("awbBox");
-  if(!awbs.length){
-    box.innerHTML = <div class="awb-title">AWB Shipment Watch</div>No AWB data found;
-    return;
+  const box=document.getElementById("awbBox");
+  const s=awbs[awbIndex%awbs.length];
+  const now=new Date(),dep=new Date(s.departure),arr=new Date(s.arrival);
+
+  let status="",visual="";
+  if(now<dep){
+    status=hours(now,dep)+" hrs to departure";
+    visual=`<div class="route-line"><div class="line"></div><span style="font-size:24px">📦</span></div>`;
+  }else if(now<arr){
+    status="Airborne • "+hours(now,arr)+" hrs remaining";
+    visual=`<div class="route-line"><div class="line"></div><span class="plane">✈️</span></div>`;
+  }else{
+    status="Shipment arrived";
+    visual=`<div class="route-line"><div class="line"></div><span style="font-size:24px">✅</span></div>`;
   }
 
-  const s = awbs[awbIndex % awbs.length];
-  const now = new Date();
-  const dep = new Date(s.departure);
-  const arr = new Date(s.arrival);
-
-  let status = "";
-  let visual = "";
-
-  if(now < dep){
-    status = hours(now,dep) + " hrs to departure";
-    visual = <div class="route-line"><div class="line"></div><span style="position:absolute;top:0;left:0;font-size:25px">📦</span></div>;
-  } else if(now < arr){
-    status = "Airborne • " + hours(now,arr) + " hrs remaining";
-    visual = <div class="route-line"><div class="line"></div><span class="plane">✈️</span></div>;
-  } else {
-    status = "Shipment arrived destination";
-    visual = <div class="route-line"><div class="line"></div><span style="position:absolute;top:0;right:0;font-size:25px">✅</span></div>;
-  }
-
-  box.innerHTML = `
+  box.innerHTML=`
     <div class="awb-title">AWB Shipment Watch</div>
     <div class="awb-no">${esc(s.awb)}</div>
     <div class="route">${esc(s.origin)} → ${esc(s.destination)}</div>
     ${visual}
     <div class="status">${esc(status)}</div>
-    <div style="font-size:14px;color:#cbd5e1;margin-top:6px">Flight: ${esc(s.flight || "N/A")}</div>
+    <div style="font-size:14px;color:#cbd5e1">Flight: ${esc(s.flight)}</div>
   `;
-
   awbIndex++;
 }
 
-function start(){
-  updateClock();
-  setInterval(updateClock,1000);
-
-  news = fallbackNews;
-  renderAllNews();
-
-  loadNews();
-  loadAWB();
-
-  setInterval(loadNews,900000);
-  setInterval(loadAWB,60000);
-
-  setInterval(()=>{
-    newsIndex++;
-    renderMainNews();
-  },10000);
-
-  setInterval(renderAWB,6000);
-}
-
-start();
+/* ---------- START ---------- */
+updateClock();
+setInterval(updateClock,1000);
+news=fallbackNews;
+renderAll();
+loadNews();
+loadAWB();
+setInterval(()=>{newsIndex++;renderMain()},10000);
+setInterval(renderAWB,6000);
 </script>
 
 </body>
 </html>
+``
