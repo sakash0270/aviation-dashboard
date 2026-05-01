@@ -158,9 +158,28 @@ updateClock();
 let news=[];
 
 async function loadNews(){
-  const res = await fetch("https://api.rss2json.com/v1/api.json?rss_url=https://simpleflying.com/feed/");
-  const data = await res.json();
-  news = data.items;
+  try{
+    const res = await fetch("https://api.rss2json.com/v1/api.json?rss_url=https://simpleflying.com/feed/");
+    const data = await res.json();
+
+    if(data.items && data.items.length){
+      news = data.items;
+    }else{
+      throw "No data";
+    }
+
+  }catch(e){
+
+    // 🔥 FALLBACK DATA (ALWAYS WORKS)
+    news = [
+      {title:"AOG response time matters more than rate",description:"Operations must prioritise speed and decision making."},
+      {title:"Global air cargo demand rising steadily",description:"Market shows resilience across regions."},
+      {title:"Middle East hubs expanding cargo capacity",description:"DXB and AUH strengthening logistics role."},
+      {title:"Aircraft maintenance delays impacting schedules",description:"MRO bottlenecks observed globally."},
+      {title:"Airlines optimizing routes for fuel efficiency",description:"Operational cost reduction focus."}
+    ];
+  }
+
   renderNews();
 }
 
