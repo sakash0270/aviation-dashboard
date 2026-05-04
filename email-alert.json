@@ -1,1 +1,16 @@
-
+[
+  {
+    "source": "PitchBook / Aviation Alert",
+    "title": "Sample aviation market alert from inbox",
+    "summary": "This is where Outlook aviation alert email summaries will appear once Power Automate is connected.",
+    "received": "2026-05-04T15:30:00+04:00",
+    "category": "Market / Investment"
+  },
+  {
+    "source": "Orient Daily Digest",
+    "title": "Sample regional aviation digest update",
+    "summary": "Newsletter and digest updates from your Aviation Alerts folder will feed this section.",
+    "received": "2026-05-04T16:00:00+04:00",
+    "category": "Regional / Airline"
+  }
+]
