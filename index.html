@@ -2,37 +2,46 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Aviation Operations Dashboard</title>
+<title>Aviation Ops Intelligence Dashboard V6</title>
 <style>
+*{box-sizing:border-box}
 body{margin:0;background:#020617;color:white;font-family:Arial,Helvetica,sans-serif;overflow:hidden}
-.header{height:70px;background:linear-gradient(90deg,#b91c1c,#ef4444,#f97316);display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-weight:bold}
+.header{height:72px;background:linear-gradient(90deg,#991b1b,#ef4444,#f97316);display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-weight:bold}
 .header small{display:block;font-size:11px;letter-spacing:4px}
 .title{font-size:28px}
 .clock{text-align:right;font-size:22px}
-.main{height:calc(100vh - 120px);display:grid;grid-template-columns:68% 32%}
-.left{padding:22px;background:linear-gradient(135deg,#020617,#0f172a)}
-.right{padding:16px;background:#08111f;border-left:1px solid #1e293b;display:grid;grid-template-rows:1.2fr 1fr 1fr 1fr;gap:14px}
-.kicker{color:#93c5fd;font-size:12px;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;font-weight:bold}
-.headline{font-size:44px;line-height:1.1;font-weight:900;margin-bottom:14px}
-.desc{font-size:20px;color:#cbd5e1;line-height:1.35;margin-bottom:18px}
-.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.card,.panel,.awb{background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:14px;overflow:hidden}
-.card h3,.panel h3{margin:0 0 10px;color:#93c5fd;font-size:12px;letter-spacing:2px;text-transform:uppercase}
-.card p{margin:0;font-size:20px;line-height:1.25;font-weight:bold}
-.panel div{font-size:15px;line-height:1.35}
+.main{height:calc(100vh - 124px);display:grid;grid-template-columns:67% 33%}
+.left{padding:18px;background:radial-gradient(circle at top right,rgba(56,189,248,.13),transparent 30%),linear-gradient(135deg,#020617,#0f172a)}
+.right{padding:14px;background:#08111f;border-left:1px solid #1e293b;display:grid;grid-template-rows:1.45fr .82fr .82fr .82fr;gap:12px}
+.kicker{color:#93c5fd;font-size:12px;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;font-weight:bold}
+.headline{font-size:42px;line-height:1.08;font-weight:900;margin-bottom:12px}
+.desc{font-size:19px;color:#cbd5e1;line-height:1.35;margin-bottom:16px}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.card,.panel,.awb,.safety{background:#0f172a;border:1px solid #1e293b;border-radius:16px;padding:14px;overflow:hidden}
+.card h3,.panel h3,.safety h3{margin:0 0 8px;color:#93c5fd;font-size:12px;letter-spacing:2px;text-transform:uppercase}
+.card p{margin:0;font-size:19px;line-height:1.25;font-weight:bold}
+.panel div{font-size:14px;line-height:1.35}
+.bottomGrid{display:grid;grid-template-columns:1.15fr .85fr;gap:12px;margin-top:12px}
+.metricGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.metric{background:#111827;border:1px solid #1e293b;border-radius:14px;padding:12px}
+.metric span{display:block;color:#94a3b8;font-size:11px;letter-spacing:2px;text-transform:uppercase}
+.metric strong{font-size:34px}
 .awb{border:2px solid #38bdf8;background:linear-gradient(135deg,#082f49,#0f172a)}
-.awb-title{font-size:12px;letter-spacing:3px;color:#bae6fd;text-transform:uppercase;font-weight:bold;margin-bottom:10px}
+.awb-title{font-size:12px;letter-spacing:3px;color:#bae6fd;text-transform:uppercase;font-weight:bold;margin-bottom:8px}
 .awb-no{font-size:28px;font-weight:900}
-.route{font-size:26px;font-weight:900;margin:10px 0}
-.status{font-size:20px;color:#fde68a;font-weight:bold}
-.ticker{height:50px;background:#000;display:flex;align-items:center;border-top:1px solid #7f1d1d;overflow:hidden}
+.route{font-size:24px;font-weight:900;margin:8px 0}
+.status{font-size:19px;color:#fde68a;font-weight:bold;margin-top:6px}
+.flight{font-size:13px;color:#cbd5e1;margin-top:5px}
+.mapBox{height:132px;border-radius:14px;margin-top:10px;background:linear-gradient(135deg,#0e7490,#164e63 45%,#0f172a);border:1px solid rgba(255,255,255,.16);position:relative;overflow:hidden}
+.mapLabel{position:absolute;background:rgba(2,6,23,.78);border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:5px 8px;font-weight:bold;font-size:14px}
+.origin{left:16px;top:20px}.dest{right:16px;bottom:22px}
+.routeSvg{position:absolute;inset:0;width:100%;height:100%}
+.flyPlane{position:absolute;font-size:27px;animation:flyAcross 6s linear infinite;filter:drop-shadow(0 2px 3px #000)}
+@keyframes flyAcross{0%{left:18%;top:57%}50%{left:50%;top:42%}100%{left:76%;top:27%}}
+.ticker{height:52px;background:#000;display:flex;align-items:center;border-top:1px solid #7f1d1d;overflow:hidden}
 .live{height:100%;display:flex;align-items:center;background:#dc2626;padding:0 18px;font-weight:900;letter-spacing:3px}
-.scroll{white-space:nowrap;animation:scroll 42s linear infinite;padding-left:100%;font-size:18px;font-weight:bold}
+.scroll{white-space:nowrap;animation:scroll 46s linear infinite;padding-left:100%;font-size:18px;font-weight:bold}
 @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-100%)}}
-.route-line{height:34px;position:relative;margin-top:10px}
-.line{position:absolute;top:17px;left:0;right:0;height:3px;background:#38bdf8}
-.plane{position:absolute;top:0;font-size:26px;animation:fly 6s linear infinite}
-@keyframes fly{from{left:0}to{left:88%}}
 </style>
 </head>
 
@@ -50,8 +59,21 @@ body{margin:0;background:#020617;color:white;font-family:Arial,Helvetica,sans-se
   <div class="left">
     <div class="kicker">Top Aviation Story</div>
     <div class="headline" id="headline">Dashboard starting...</div>
-    <div class="desc" id="desc">Loading live aviation feed and AWB shipment watch.</div>
+    <div class="desc" id="desc">Loading aviation intelligence and AWB shipment watch.</div>
     <div class="cards" id="cards"></div>
+
+    <div class="bottomGrid">
+      <div class="safety">
+        <h3>Aviation Safety Spotlight</h3>
+        <div id="safetyBox">Loading safety insight...</div>
+      </div>
+      <div class="metricGrid">
+        <div class="metric"><span>Total Items</span><strong id="mTotal">--</strong></div>
+        <div class="metric"><span>Disruptions</span><strong id="mInc">--</strong></div>
+        <div class="metric"><span>ME / Gulf</span><strong id="mME">--</strong></div>
+        <div class="metric"><span>Cargo / MRO</span><strong id="mOps">--</strong></div>
+      </div>
+    </div>
   </div>
 
   <div class="right">
@@ -80,188 +102,112 @@ body{margin:0;background:#020617;color:white;font-family:Arial,Helvetica,sans-se
 </div>
 
 <script>
-var news=[];
-var awbs=[];
-var newsIndex=0;
-var awbIndex=0;
+var news=[], awbs=[], newsIndex=0, awbIndex=0, safetyIndex=0;
 
 var fallbackNews=[
-  {title:"AOG response time matters more than rate",description:"In urgent aerospace logistics, speed and escalation are critical.",source:"Ops Reminder"},
-  {title:"Middle East hubs continue expanding cargo capability",description:"DXB, DWC and AUH remain important nodes for time-critical logistics.",source:"Regional Watch"},
-  {title:"Aircraft maintenance and engine supply chains remain under pressure",description:"MRO delays and component shortages can create urgent shipping demand.",source:"MRO Watch"},
-  {title:"Weather, NOTAM and airspace restrictions should be monitored together",description:"Operational disruption often comes from several combined factors.",source:"Ops Intelligence"},
-  {title:"Air cargo demand remains linked to disruptions and aircraft availability",description:"Aviation teams can use market signals to anticipate urgent movements.",source:"Cargo Watch"},
-  {title:"Airshow and aviation events can create short-term cargo opportunities",description:"Aircraft parts, exhibition equipment and urgent spares often move around major aviation events.",source:"Events Watch"}
+{title:"AOG response time matters more than rate",description:"In urgent aerospace logistics, speed, escalation and decision making are critical.",source:"Ops Reminder"},
+{title:"Middle East hubs continue expanding cargo capability",description:"DXB, DWC and AUH remain important nodes for time-critical logistics.",source:"Regional Watch"},
+{title:"Aircraft maintenance and engine supply chains remain under pressure",description:"MRO delays and component shortages can create urgent shipping demand.",source:"MRO Watch"},
+{title:"Weather, NOTAM and airspace restrictions should be monitored together",description:"Operational disruption often comes from several combined factors.",source:"Ops Intelligence"},
+{title:"Air cargo demand remains linked to disruptions and aircraft availability",description:"Aviation teams can use market signals to anticipate urgent movements.",source:"Cargo Watch"},
+{title:"Airshow and aviation events can create short-term cargo opportunities",description:"Aircraft parts, exhibition equipment and urgent spares often move around major aviation events.",source:"Events Watch"}
 ];
 
-function clean(v){
-  return String(v||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim();
-}
+var safety=[
+{title:"Tenerife 1977",cause:"Runway confusion, fog, radio interference and communication breakdown.",lesson:"Readback discipline, runway awareness and CRM are critical."},
+{title:"Air France 447",cause:"Pitot icing, unreliable airspeed and inappropriate manual inputs.",lesson:"Manual flying, upset recovery and automation awareness matter."},
+{title:"Qantas 32",cause:"Uncontained engine failure caused by oil-feed pipe defect.",lesson:"CRM, systems knowledge and calm checklist handling prevented disaster."},
+{title:"BA 38",cause:"Ice crystals restricted fuel flow on final approach.",lesson:"Cold-weather fuel system behavior can affect approach safety."}
+];
 
-function esc(v){
-  return String(v||"").replace(/[&<>"']/g,function(m){
-    return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m];
-  });
-}
-
-function short(v,n){
-  v=clean(v);
-  return v.length>n ? v.slice(0,n)+"..." : v;
-}
+function clean(v){return String(v||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim()}
+function esc(v){return String(v||"").replace(/[&<>"']/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]})}
+function short(v,n){v=clean(v);return v.length>n?v.slice(0,n)+"...":v}
 
 function updateClock(){
-  var now=new Date();
-  document.getElementById("clock").innerHTML =
-    now.toLocaleTimeString("en-GB",{timeZone:"Asia/Dubai",hour12:false}) +
-    "<br><span style='font-size:13px;color:#fee2e2'>" +
-    now.toLocaleDateString("en-GB",{timeZone:"Asia/Dubai",weekday:"short",day:"2-digit",month:"short"}) +
-    "</span>";
+ var now=new Date();
+ document.getElementById("clock").innerHTML=
+ now.toLocaleTimeString("en-GB",{timeZone:"Asia/Dubai",hour12:false})+
+ "<br><span style='font-size:13px;color:#fee2e2'>"+
+ now.toLocaleDateString("en-GB",{timeZone:"Asia/Dubai",weekday:"short",day:"2-digit",month:"short"})+
+ "</span>";
 }
 
 function classify(item,type){
-  var t=(item.title+" "+item.description).toLowerCase();
-  if(type==="incident") return /(incident|emergency|delay|weather|storm|diversion|closure|airspace|grounded|security|evacuation|collision)/.test(t);
-  if(type==="me") return /(dubai|uae|abu dhabi|dxb|dwc|auh|gulf|qatar|saudi|riyadh|jeddah|doha|kuwait|oman|bahrain|emirates|etihad)/.test(t);
-  if(type==="ops") return /(cargo|mro|maintenance|engine|component|freight|logistics|aog|airshow|event|exhibition|aircraft|supply chain)/.test(t);
-  return false;
+ var t=(item.title+" "+item.description).toLowerCase();
+ if(type==="incident")return /(incident|emergency|delay|weather|storm|diversion|closure|airspace|grounded|security|evacuation|collision)/.test(t);
+ if(type==="me")return /(dubai|uae|abu dhabi|dxb|dwc|auh|gulf|qatar|saudi|riyadh|jeddah|doha|kuwait|oman|bahrain|emirates|etihad)/.test(t);
+ if(type==="ops")return /(cargo|mro|maintenance|engine|component|freight|logistics|aog|airshow|event|exhibition|aircraft|supply chain)/.test(t);
+ return false;
 }
 
 function renderNews(){
-  if(!news.length){news=fallbackNews;}
+ if(!news.length)news=fallbackNews;
+ var lead=news[newsIndex%news.length];
+ document.getElementById("headline").innerHTML=esc(lead.title);
+ document.getElementById("desc").innerHTML=esc(short(lead.description,190));
 
-  var lead=news[newsIndex % news.length];
-  document.getElementById("headline").innerHTML=esc(lead.title);
-  document.getElementById("desc").innerHTML=esc(short(lead.description,190));
+ var cards=[];
+ for(var i=1;i<=4;i++)cards.push(news[(newsIndex+i)%news.length]);
+ document.getElementById("cards").innerHTML=cards.map(function(x){
+ return "<div class='card'><h3>"+esc(x.source||"Aviation Feed")+"</h3><p>"+esc(short(x.title,110))+"</p></div>";
+ }).join("");
 
-  var cards=[];
-  for(var i=1;i<=4;i++){
-    cards.push(news[(newsIndex+i)%news.length]);
-  }
+ var inc=news.filter(function(x){return classify(x,"incident")}).slice(0,3);
+ var me=news.filter(function(x){return classify(x,"me")}).slice(0,3);
+ var ops=news.filter(function(x){return classify(x,"ops")}).slice(0,3);
 
-  document.getElementById("cards").innerHTML=cards.map(function(x){
-    return "<div class='card'><h3>"+esc(x.source||"Aviation Feed")+"</h3><p>"+esc(short(x.title,110))+"</p></div>";
-  }).join("");
+ document.getElementById("incidents").innerHTML=(inc.length?inc:[{title:"Monitoring disruption, delay, weather and incident signals."}]).map(function(x){return "⚠️ "+esc(short(x.title,95))}).join("<br><br>");
+ document.getElementById("middleEast").innerHTML=(me.length?me:[{title:"Monitoring UAE, Gulf and regional aviation updates."}]).map(function(x){return "🌍 "+esc(short(x.title,95))}).join("<br><br>");
+ document.getElementById("ops").innerHTML=(ops.length?ops:[{title:"Monitoring cargo, MRO, AOG, events and supply-chain updates."}]).map(function(x){return "📦 "+esc(short(x.title,95))}).join("<br><br>");
 
-  var inc=news.filter(function(x){return classify(x,"incident");}).slice(0,3);
-  var me=news.filter(function(x){return classify(x,"me");}).slice(0,3);
-  var ops=news.filter(function(x){return classify(x,"ops");}).slice(0,3);
+ document.getElementById("mTotal").innerHTML=news.length;
+ document.getElementById("mInc").innerHTML=inc.length;
+ document.getElementById("mME").innerHTML=me.length;
+ document.getElementById("mOps").innerHTML=ops.length;
 
-  document.getElementById("incidents").innerHTML=(inc.length?inc:[{title:"Monitoring disruption, delay, weather and incident signals."}]).map(function(x){
-    return "⚠️ "+esc(short(x.title,95));
-  }).join("<br><br>");
+ document.getElementById("ticker").innerHTML=news.slice(0,12).map(function(x){return "✈️ "+x.title}).join(" • ")+" • 📦 AWB Watch active • ⚡ AOG response time matters more than rate •";
+}
 
-  document.getElementById("middleEast").innerHTML=(me.length?me:[{title:"Monitoring UAE, Gulf and regional aviation updates."}]).map(function(x){
-    return "🌍 "+esc(short(x.title,95));
-  }).join("<br><br>");
-
-  document.getElementById("ops").innerHTML=(ops.length?ops:[{title:"Monitoring cargo, MRO, AOG, events and supply-chain updates."}]).map(function(x){
-    return "📦 "+esc(short(x.title,95));
-  }).join("<br><br>");
-
-  document.getElementById("ticker").innerHTML=news.slice(0,12).map(function(x){
-    return "✈️ "+x.title;
-  }).join(" • ")+" • 📦 AWB Watch active • ⚡ AOG response time matters more than rate •";
+function renderSafety(){
+ var s=safety[safetyIndex%safety.length];
+ document.getElementById("safetyBox").innerHTML="<b>"+esc(s.title)+"</b><br><br><span style='color:#fecaca'>Cause:</span> "+esc(s.cause)+"<br><br><span style='color:#bae6fd'>Lesson:</span> "+esc(s.lesson);
+ safetyIndex++;
 }
 
 function renderAWB(){
-  var box=document.getElementById("awbBox");
+ var box=document.getElementById("awbBox");
+ if(!awbs.length){box.innerHTML="<div class='awb-title'>AWB Shipment Watch</div>No AWB data found";return}
+ var s=awbs[awbIndex%awbs.length], now=new Date(), dep=new Date(s.departure), arr=new Date(s.arrival), status="",visual="";
+ if(now<dep){status=((dep-now)/3600000).toFixed(1)+" hrs to departure";visual="<span style='position:absolute;top:0;left:0;font-size:25px'>📦</span>"}
+ else if(now<arr){status="Airborne • "+((arr-now)/3600000).toFixed(1)+" hrs remaining";visual="<span class='flyPlane'>✈️</span>"}
+ else{status="Shipment arrived destination";visual="<span style='position:absolute;top:0;right:0;font-size:25px'>✅</span>"}
 
-  if(!awbs.length){
-    box.innerHTML="<div class='awb-title'>AWB Shipment Watch</div>No AWB data found";
-    return;
-  }
-
-  var s=awbs[awbIndex % awbs.length];
-  var now=new Date();
-  var dep=new Date(s.departure);
-  var arr=new Date(s.arrival);
-
-  var status="";
-  var visual="";
-
-  if(now<dep){
-    status=((dep-now)/3600000).toFixed(1)+" hrs to departure";
-    visual="<div class='route-line'><div class='line'></div><span style='position:absolute;top:0;left:0;font-size:25px'>📦</span></div>";
-  }else if(now<arr){
-    status="Airborne • "+((arr-now)/3600000).toFixed(1)+" hrs remaining";
-    visual="<div class='route-line'><div class='line'></div><span class='plane'>✈️</span></div>";
-  }else{
-    status="Shipment arrived destination";
-    visual="<div class='route-line'><div class='line'></div><span style='position:absolute;top:0;right:0;font-size:25px'>✅</span></div>";
-  }
-
-  box.innerHTML =
-    "<div class='awb-title'>AWB Shipment Watch</div>"+
-    "<div class='awb-no'>"+esc(s.awb)+"</div>"+
-    "<div class='route'>"+esc(s.origin)+" → "+esc(s.destination)+"</div>"+
-    visual+
-    "<div class='status'>"+esc(status)+"</div>"+
-    "<div style='font-size:14px;color:#cbd5e1;margin-top:6px'>Flight: "+esc(s.flight||"N/A")+"</div>";
-
-  awbIndex++;
+ box.innerHTML="<div class='awb-title'>AWB Shipment Watch</div><div class='awb-no'>"+esc(s.awb)+"</div><div class='route'>"+esc(s.origin)+" → "+esc(s.destination)+"</div><div class='mapBox'><svg class='routeSvg'><path d='M40 95 C150 20 250 120 360 35' stroke='#1d4ed8' stroke-width='5' fill='none'/><circle cx='40' cy='95' r='6' fill='#22c55e'/><circle cx='360' cy='35' r='6' fill='#22c55e'/></svg><div class='mapLabel origin'>"+esc(s.origin)+"</div><div class='mapLabel dest'>"+esc(s.destination)+"</div>"+visual+"</div><div class='status'>"+esc(status)+"</div><div class='flight'>Flight: "+esc(s.flight||"N/A")+"</div>";
+ awbIndex++;
 }
 
 function loadNews(){
-  news=fallbackNews;
-  renderNews();
-
-  var url="https://api.rss2json.com/v1/api.json?rss_url=https://simpleflying.com/feed/";
-  fetch(url).then(function(res){return res.json();}).then(function(data){
-    if(data.items && data.items.length){
-      news=data.items.map(function(x){
-        return {
-          title:clean(x.title),
-          description:clean(x.description||x.content),
-          source:"Simple Flying"
-        };
-      });
-      renderNews();
-    }
-  }).catch(function(){
-    news=fallbackNews;
-    renderNews();
-  });
+ news=fallbackNews;renderNews();
+ fetch("https://api.rss2json.com/v1/api.json?rss_url=https://simpleflying.com/feed/").then(function(r){return r.json()}).then(function(d){
+ if(d.items&&d.items.length){news=d.items.map(function(x){return{title:clean(x.title),description:clean(x.description||x.content),source:"Simple Flying"}});renderNews()}
+ }).catch(function(){news=fallbackNews;renderNews()});
 }
 
 function loadAWB(){
-  awbs=[
-    {awb:"SAMPLE-001",origin:"DXB",destination:"FRA",flight:"EK000",departure:"2026-05-04T23:45:00+04:00",arrival:"2026-05-05T06:30:00+02:00"}
-  ];
-  renderAWB();
-
-  fetch("https://sakash0270.github.io/aviation-dashboard/awb-data.json?cache="+Date.now())
-    .then(function(res){return res.json();})
-    .then(function(data){
-      if(Array.isArray(data) && data.length){
-        awbs=data;
-        renderAWB();
-      }
-    })
-    .catch(function(){
-      renderAWB();
-    });
+ awbs=[{awb:"SAMPLE-001",origin:"DXB",destination:"FRA",flight:"EK000",departure:"2026-05-04T23:45:00+04:00",arrival:"2026-05-05T06:30:00+02:00"}];renderAWB();
+ fetch("https://sakash0270.github.io/aviation-dashboard/awb-data.json?cache="+Date.now()).then(function(r){return r.json()}).then(function(d){if(Array.isArray(d)&&d.length){awbs=d;renderAWB()}}).catch(function(){renderAWB()});
 }
 
 function start(){
-  updateClock();
-  setInterval(updateClock,1000);
-
-  loadNews();
-  loadAWB();
-
-  setInterval(loadNews,900000);
-  setInterval(loadAWB,60000);
-
-  setInterval(function(){
-    newsIndex++;
-    renderNews();
-  },10000);
-
-  setInterval(function(){
-    renderAWB();
-  },6000);
+ updateClock();setInterval(updateClock,1000);
+ renderSafety();setInterval(renderSafety,30000);
+ loadNews();loadAWB();
+ setInterval(loadNews,900000);
+ setInterval(loadAWB,60000);
+ setInterval(function(){newsIndex++;renderNews()},10000);
+ setInterval(renderAWB,6000);
 }
-
 start();
 </script>
 
