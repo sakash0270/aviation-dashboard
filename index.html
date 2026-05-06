@@ -116,12 +116,12 @@ body{
 
   <div class="panel" style="margin-top:10px">
     <b>Aviation Alerts (Inbox Feed)</b>
-    <div id="alerts"></div>
+    <div id="alerts">Loading...</div>
   </div>
 
   <div class="panel" style="margin-top:10px">
     <b>Safety / Accident Spotlight</b>
-    <div id="safety"></div>
+    <div id="safety">Loading...</div>
   </div>
 </div>
 
@@ -132,28 +132,27 @@ body{
 
 <div class="panel">
   <b>Incidents / Disruptions</b>
-  <div id="incidents"></div>
+  <div id="incidents">No data</div>
 </div>
 
 <div class="panel">
   <b>Middle East</b>
-  <div id="me"></div>
+  <div id="me">No data</div>
 </div>
 
 <div class="panel">
   <b>Cargo / Ops</b>
-  <div id="ops"></div>
+  <div id="ops">No data</div>
 </div>
 
 </div>
 </div>
 
 <div class="ticker">
-  <div class="scroll" id="ticker"></div>
+  <div class="scroll" id="ticker">News loading...</div>
 </div>
 
 <script>
-
 let news = [];
 let awbs = [];
 let alerts = [];
@@ -164,136 +163,133 @@ let s = 0;
 
 /* CLOCK */
 setInterval(()=>{
- let now=new Date()
- document.getElementById("clock").innerHTML=
- now.toLocaleTimeString("en-GB",{timeZone:"Asia/Dubai"})
-},1000)
+  const now = new Date();
+  document.getElementById("clock").innerHTML =
+    now.toLocaleTimeString("en-GB",{timeZone:"Asia/Dubai"});
+},1000);
 
 /* NEWS */
 function loadNews(){
- fetch("https://api.rss2json.com/v1/api.json?rss_url=https://simpleflying.com/feed/")
- .then(r=>r.json())
- .then(d=>{
-   news=d.items
-   renderNews()
- })
- .catch(()=>{})
+  fetch("https://api.rss2json.com/v1/api.json?rss_url=https://simpleflying.com/feed/")
+    .then(r=>r.json())
+    .then(d=>{
+      news = d.items || [];
+      if(news.length){ renderNews(); }
+      else{
+        document.getElementById("headline").innerText="No aviation news available";
+      }
+    })
+    .catch(()=>{
+      document.getElementById("headline").innerText="Aviation news unavailable";
+    });
 }
 
 function renderNews(){
- if(!news.length)return
- let item=news[i%news.length]
+  if(!news.length) return;
+  let item = news[i % news.length];
+  document.getElementById("headline").innerText = item.title;
+  document.getElementById("desc").innerText =
+    item.description.replace(/<[^>]*>/g,"").slice(0,150);
 
- document.getElementById("headline").innerText=item.title
- document.getElementById("desc").innerText=item.description.replace(/<[^>]*>/g,"").slice(0,150)
+  document.getElementById("cards").innerHTML =
+    news.slice(1,5).map(x=>`<div class="card">${x.title}</div>`).join("");
 
- document.getElementById("cards").innerHTML=
- news.slice(1,5).map(x=><div class="card">${x.title}</div>).join("")
+  document.getElementById("ticker").innerHTML =
+    news.map(x=>"✈️ "+x.title).join(" • ");
 
- document.getElementById("ticker").innerHTML=
- news.map(x=>"✈️ "+x.title).join(" • ")
-
- i++
+  i++;
 }
 
 /* AWB */
 function loadAWB(){
- fetch("awb-data.json")
- .then(r=>r.json())
- .then(d=>{
-   awbs=d
-   renderAWB()
- })
+  fetch("awb-data.json")
+    .then(r=>r.json())
+    .then(d=>{
+      awbs = d || [];
+      if(awbs.length){ renderAWB(); }
+      else{
+        document.getElementById("awbBox").innerText="AWB data unavailable";
+      }
+    })
+    .catch(()=>{
+      document.getElementById("awbBox").innerText="AWB feed unavailable";
+    });
 }
 
 function renderAWB(){
- if(!awbs.length)return
- let s=awbs[a%awbs.length]
- let now=new Date()
- let dep=new Date(s.departure)
- let arr=new Date(s.arrival)
+  if(!awbs.length) return;
+  let x = awbs[a % awbs.length];
+  let now = new Date();
+  let dep = new Date(x.departure);
+  let arr = new Date(x.arrival);
 
- let status=""
- if(now<dep) status=((dep-now)/3600000).toFixed(1)+" hrs to departure"
- else if(now<arr) status="Airborne "+((arr-now)/3600000).toFixed(1)+" hrs remaining"
- else status="Arrived"
+  let status="";
+  if(now < dep) status=((dep-now)/3600000).toFixed(1)+" hrs to departure";
+  else if(now < arr) status="Airborne "+((arr-now)/3600000).toFixed(1)+" hrs remaining";
+  else status="Arrived";
 
- document.getElementById("awbBox").innerHTML=`
- <b>AWB Shipment Watch</b>
- <div>${s.awb}</div>
- <div class="route">${s.origin} → ${s.destination}</div>
- <div class="map">
-   <div class="plane">✈️</div>
- </div>
- <div class="status">${status}</div>
- <div>Flight: ${s.flight}</div>
- `
- a++
+  document.getElementById("awbBox").innerHTML = `
+    <b>AWB Shipment Watch</b>
+    <div>${x.awb}</div>
+    <div class="route">${x.origin} → ${x.destination}</div>
+    <div class="map"><div class="plane">✈️</div></div>
+    <div class="status">${status}</div>
+    <div>Flight: ${x.flight}</div>
+  `;
+  a++;
 }
 
 /* EMAIL ALERTS */
 function loadAlerts(){
- fetch("email-alerts.json")
- .then(r=>r.json())
- .then(d=>{
-   alerts=d
-   document.getElementById("alerts").innerHTML=
-   alerts.map(x=>• ${x.title}).join("<br>")
- })
+  fetch("email-alerts.json")
+    .then(r=>r.json())
+    .then(d=>{
+      alerts = d || [];
+      if(alerts.length){
+        document.getElementById("alerts").innerHTML =
+          alerts.map(x=>"• "+x.title).join("<br>");
+      }else{
+        document.getElementById("alerts").innerText="No alerts";
+      }
+    })
+    .catch(()=>{
+      document.getElementById("alerts").innerText="Alerts feed unavailable";
+    });
 }
 
 /* ACCIDENTS */
 function loadAccidents(){
- fetch("accidents.json")
- .then(r=>r.json())
- .then(d=>{
-   accidents=d
-   renderAccident()
- })
+  fetch("accidents.json")
+    .then(r=>r.json())
+    .then(d=>{
+      accidents = d || [];
+      if(accidents.length){ renderAccident(); }
+      else{
+        document.getElementById("safety").innerText="No accident data";
+      }
+    })
+    .catch(()=>{
+      document.getElementById("safety").innerText="Accident data unavailable";
+    });
 }
 
 function renderAccident(){
- if(!accidents.length)return
- let x=accidents[s%accidents.length]
-
- document.getElementById("safety").innerHTML=
- `<b>${x.title}</b><br>
- Cause: ${x.cause}<br>
- Lesson: ${x.lesson}`
-
- s++
+  if(!accidents.length) return;
+  let x = accidents[s % accidents.length];
+  document.getElementById("safety").innerHTML =
+    `<b>${x.title}</b><br>Cause: ${x.cause}<br>Lesson: ${x.lesson}`;
+  s++;
 }
 
-/* INIT - SAFE START */
+/* INIT */
+loadNews();
+loadAWB();
+loadAlerts();
+loadAccidents();
 
-try {
-  loadNews();
-} catch (e) {
-  console.log("News error", e);
-}
-
-try {
-  loadAWB();
-} catch (e) {
-  console.log("AWB error", e);
-}
-
-try {
-  loadAlerts();
-} catch (e) {
-  console.log("Alerts error", e);
-}
-
-try {
-  loadAccidents();
-} catch (e) {
-  console.log("Accidents error", e);
-}
-
-setInterval(function(){ try { renderNews(); } catch(e){} }, 10000);
-setInterval(function(){ try { renderAWB(); } catch(e){} }, 6000);
-setInterval(function(){ try { renderAccident(); } catch(e){} }, 30000);
-
+setInterval(()=>{ try{renderNews()}catch(e){} },10000);
+setInterval(()=>{ try{renderAWB()}catch(e){} },6000);
+setInterval(()=>{ try{renderAccident()}catch(e){} },30000);
 </script>
 
 </body>
