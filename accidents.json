@@ -3,32 +3,28 @@
     "title": "Air France Flight 447",
     "aircraft": "Airbus A330",
     "year": "2009",
-    "impact": "Aircraft crashed into the Atlantic during cruise.",
-    "cause": "Pitot probe icing led to unreliable airspeed; crew response and stall recognition were major investigation findings.",
-    "lesson": "Automation awareness, unreliable airspeed handling, manual flying and upset recovery are critical.",
-    "image1": "",
-    "image2": "",
-    "image3": ""
+    "cause": "Pitot probe icing caused unreliable airspeed indications. The investigation also highlighted crew handling, stall recognition and automation awareness issues.",
+    "lesson": "Automation awareness, unreliable airspeed procedure, manual flying and upset recovery are critical."
   },
   {
     "title": "British Airways Flight 38",
     "aircraft": "Boeing 777",
     "year": "2008",
-    "impact": "Aircraft landed short of the runway at London Heathrow.",
-    "cause": "Ice crystals restricted fuel flow through the fuel-oil heat exchanger.",
-    "lesson": "Cold-weather fuel system behaviour and approach energy monitoring are important safety lessons.",
-    "image1": "",
-    "image2": "",
-    "image3": ""
+    "cause": "Ice crystals restricted fuel flow through the fuel-oil heat exchanger during final approach.",
+    "lesson": "Cold-weather fuel system behaviour and approach energy monitoring are important safety lessons."
   },
   {
     "title": "Qantas Flight 32",
     "aircraft": "Airbus A380",
     "year": "2010",
-    "impact": "Uncontained engine failure occurred after departure from Singapore.",
-    "cause": "A defect in an oil feed pipe led to oil leakage, fire and turbine disc failure.",
-    "lesson": "Crew resource management, system knowledge and disciplined checklist handling prevented disaster.",
-    "image1": "",
-    "image2": "",
-    "image3": ""
+    "cause": "A defect in an oil feed pipe led to oil leakage, internal fire and uncontained engine failure.",
+    "lesson": "Crew resource management, system knowledge and disciplined checklist handling prevented a major disaster."
+  },
+  {
+    "title": "Tenerife Airport Disaster",
+    "aircraft": "Boeing 747",
+    "year": "1977",
+    "cause": "Runway confusion, fog, radio communication issues and authority-gradient factors contributed to the collision.",
+    "lesson": "Clear readback, runway awareness and cockpit resource management are essential."
   }
+]
