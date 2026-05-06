@@ -264,15 +264,35 @@ function renderAccident(){
  s++
 }
 
-/* INIT */
-loadNews()
-loadAWB()
-loadAlerts()
-loadAccidents()
+/* INIT - SAFE START */
 
-setInterval(renderNews,10000)
-setInterval(renderAWB,6000)
-setInterval(renderAccident,30000)
+try {
+  loadNews();
+} catch (e) {
+  console.log("News error", e);
+}
+
+try {
+  loadAWB();
+} catch (e) {
+  console.log("AWB error", e);
+}
+
+try {
+  loadAlerts();
+} catch (e) {
+  console.log("Alerts error", e);
+}
+
+try {
+  loadAccidents();
+} catch (e) {
+  console.log("Accidents error", e);
+}
+
+setInterval(function(){ try { renderNews(); } catch(e){} }, 10000);
+setInterval(function(){ try { renderAWB(); } catch(e){} }, 6000);
+setInterval(function(){ try { renderAccident(); } catch(e){} }, 30000);
 
 </script>
 
