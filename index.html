@@ -183,19 +183,103 @@ function loadNews(){
       document.getElementById("headline").innerText="Aviation news unavailable";
     });
 }
+function category(item){
+
+let text = (
+(item.title || "") + " " +
+(item.description || "")
+).toLowerCase();
+
+if(
+text.includes("accident") ||
+text.includes("incident") ||
+text.includes("delay") ||
+text.includes("weather") ||
+text.includes("closure") ||
+text.includes("emergency") ||
+text.includes("strike")
+){
+return "incident";
+}
+
+if(
+text.includes("dubai") ||
+text.includes("uae") ||
+text.includes("abu dhabi") ||
+text.includes("qatar") ||
+text.includes("saudi") ||
+text.includes("emirates") ||
+text.includes("etihad") ||
+text.includes("gulf")
+){
+return "middleeast";
+}
+
+if(
+text.includes("cargo") ||
+text.includes("freight") ||
+text.includes("mro") ||
+text.includes("maintenance") ||
+text.includes("engine") ||
+text.includes("aircraft") ||
+text.includes("logistics")
+){
+return "cargo";
+}
+
+return "general";
+}
+function category(item){
+  let text = ((item.title || "") + " " + (item.description || "")).toLowerCase();
+
+  if(text.includes("accident") || text.includes("incident") || text.includes("delay") || text.includes("weather") || text.includes("closure") || text.includes("emergency") || text.includes("strike")){
+    return "incident";
+  }
+
+  if(text.includes("dubai") || text.includes("uae") || text.includes("abu dhabi") || text.includes("qatar") || text.includes("saudi") || text.includes("emirates") || text.includes("etihad") || text.includes("gulf")){
+    return "middleeast";
+  }
+
+  if(text.includes("cargo") || text.includes("freight") || text.includes("mro") || text.includes("maintenance") || text.includes("engine") || text.includes("aircraft") || text.includes("logistics")){
+    return "cargo";
+  }
+
+  return "general";
+}
 
 function renderNews(){
   if(!news.length) return;
+
   let item = news[i % news.length];
+
   document.getElementById("headline").innerText = item.title;
   document.getElementById("desc").innerText =
-    item.description.replace(/<[^>]*>/g,"").slice(0,150);
+    (item.description || "").replace(/<[^>]*>/g,"").slice(0,150);
 
   document.getElementById("cards").innerHTML =
-    news.slice(1,5).map(x=>`<div class="card">${x.title}</div>`).join("");
+    news.slice(1,5).map(x => `<div class="card">${x.title}</div>`).join("");
+
+  let incidents = news.filter(x => category(x) === "incident");
+  let middleeast = news.filter(x => category(x) === "middleeast");
+  let cargo = news.filter(x => category(x) === "cargo");
+
+  document.getElementById("incidents").innerHTML =
+    incidents.length
+      ? incidents.slice(0,3).map(x => `<div style="margin-bottom:12px">⚠️ ${x.title}</div>`).join("")
+      : "No disruption data currently";
+
+  document.getElementById("me").innerHTML =
+    middleeast.length
+      ? middleeast.slice(0,3).map(x => `<div style="margin-bottom:12px">🌍 ${x.title}</div>`).join("")
+      : "Monitoring Middle East / Gulf updates";
+
+  document.getElementById("ops").innerHTML =
+    cargo.length
+      ? cargo.slice(0,3).map(x => `<div style="margin-bottom:12px">📦 ${x.title}</div>`).join("")
+      : "Monitoring cargo / MRO / ops updates";
 
   document.getElementById("ticker").innerHTML =
-    news.map(x=>"✈️ "+x.title).join(" • ");
+    news.map(x => "✈ " + x.title).join(" • ");
 
   i++;
 }
