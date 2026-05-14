@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html>
-<body style="background:black;color:yellow;font-size:30px;">
+<body style="background:black;color:yellow;font-size:28px;">
 
-<marquee id="ticker">Loading ticker...</marquee>
+<marquee id="ticker">Loading...</marquee>
 
 <script>
 
-fetch('./data/awb.json')
-.then(r=>r.json())
-.then(d=>{
+fetch('https://raw.githubusercontent.com/sakash0270/aviation-dashboard/main/data/awb.json')
+.then(r => r.json())
+.then(data => {
 
 let text = "";
 
-d.data.forEach(x=>{
-  text += x.awb + " " + x.status + " ✈ | ";
+data.data.forEach(x => {
+text += x.awb + " " + x.status + " ✈ | ";
 });
 
 document.getElementById("ticker").innerText = text;
 
 })
 .catch(()=>{
-  document.getElementById("ticker").innerText = "Error loading data";
+document.getElementById("ticker").innerText = "ERROR";
 });
 
 </script>
