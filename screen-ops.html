@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<body style="background:black;color:#00FF00;font-family:Arial;">
+<body style="background:black;color:white;font-family:Arial;">
 
 <h2>LIVE OPERATIONS</h2>
 
@@ -12,22 +12,22 @@
 <th>Status</th>
 <th>Countdown</th>
 </tr>
-<tbody id="tbl"><tr><td colspan="5">Loading...</td></tr></tbody>
+<tbody id="tbl"><tr><td>Loading...</td></tr></tbody>
 </table>
 
 <script>
 
-fetch('./data/awb.json')
-.then(r=>r.json())
-.then(d=>{
+fetch('https://raw.githubusercontent.com/sakash0270/aviation-dashboard/main/data/awb.json')
+.then(res => res.json())
+.then(data => {
 
-let rows="";
+let rows = "";
 
-d.data.forEach(x=>{
+data.data.forEach(x => {
 
-let diff = Math.floor((new Date(x.etd)-new Date())/60000);
+let diff = Math.floor((new Date(x.etd) - new Date()) / 60000);
 
-let color = x.delay==="YES" ? "red" : "green";
+let color = x.delay === "YES" ? "red" : "green";
 
 rows += `
 <tr style="background:${color};color:white">
@@ -37,14 +37,14 @@ rows += `
 <td>${x.status}</td>
 <td>${diff} min</td>
 </tr>`;
+
 });
 
-document.getElementById("tbl").innerHTML=rows;
+document.getElementById("tbl").innerHTML = rows;
 
 })
-.catch(e=>{
-  document.getElementById("tbl").innerHTML =
-  "<tr><td colspan='5'>Error loading data</td></tr>";
+.catch(()=>{
+document.getElementById("tbl").innerHTML = "<tr><td>ERROR</td></tr>";
 });
 
 </script>
