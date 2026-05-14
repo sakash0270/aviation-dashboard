@@ -1,26 +1,27 @@
 <!DOCTYPE html>
 <html>
-<body style="margin:0;background:black;">
+<body style="background:black;color:yellow;font-size:30px;">
 
-<iframe id="screen" width="100%" height="100%" style="border:none;"></iframe>
+<marquee id="ticker">Loading ticker...</marquee>
 
 <script>
 
-let screens = [
-  "screen-ops.html",
-  "screen-ticker.html",
-  "screen-alerts.html"
-];
+fetch('./data/awb.json')
+.then(r=>r.json())
+.then(d=>{
 
-let i = 0;
+let text = "";
 
-function rotate() {
-  document.getElementById("screen").src = screens[i];
-  i = (i + 1) % screens.length;
-}
+d.data.forEach(x=>{
+  text += x.awb + " " + x.status + " ✈ | ";
+});
 
-rotate();
-setInterval(rotate, 60000);
+document.getElementById("ticker").innerText = text;
+
+})
+.catch(()=>{
+  document.getElementById("ticker").innerText = "Error loading data";
+});
 
 </script>
 
