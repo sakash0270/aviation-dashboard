@@ -2,27 +2,27 @@
 <html>
 <body style="margin:0;background:black;">
 
-<iframe id="screen" width="100%" height="100%" style="border:none;"></iframe>
+<iframe id="screen" style="width:100%;height:100vh;border:none;"></iframe>
 
 <script>
 
-let screens = [
-  "./screen-ops.html",
-  "./screen-ticker.html",
-  "./screen-alerts.html"
+// load screens from full URL (fixes blank issue)
+const screens = [
+  "https://sakash0270.github.io/aviation-dashboard/screen-ops.html",
+  "https://sakash0270.github.io/aviation-dashboard/screen-ticker.html",
+  "https://sakash0270.github.io/aviation-dashboard/screen-alerts.html"
 ];
 
-let index = 0;
-let frame = document.getElementById("screen");
+let i = 0;
 
-// ✅ Load FIRST screen immediately
-frame.src = screens[0];
+// load first screen immediately
+document.getElementById("screen").src = screens[0];
 
-// ✅ Rotate screens
-setInterval(()=>{
-  index = (index + 1) % screens.length;
-  frame.src = screens[index];
-},60000);
+// rotate every 60 sec
+setInterval(() => {
+  i = (i + 1) % screens.length;
+  document.getElementById("screen").src = screens[i];
+}, 60000);
 
 </script>
 
