@@ -7,20 +7,22 @@
 <script>
 
 let screens = [
-  "screen-ops.html",
-  "screen-ticker.html",
-  "screen-alerts.html"
+  "./screen-ops.html",
+  "./screen-ticker.html",
+  "./screen-alerts.html"
 ];
 
-let i = 0;
+let index = 0;
+let frame = document.getElementById("screen");
 
-function rotate() {
-  document.getElementById("screen").src = screens[i];
-  i = (i + 1) % screens.length;
-}
+// ✅ Load FIRST screen immediately
+frame.src = screens[0];
 
-rotate();
-setInterval(rotate, 60000);
+// ✅ Rotate screens
+setInterval(()=>{
+  index = (index + 1) % screens.length;
+  frame.src = screens[index];
+},60000);
 
 </script>
 
