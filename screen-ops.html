@@ -1,26 +1,51 @@
 <!DOCTYPE html>
 <html>
-<body style="margin:0;background:black;">
+<body style="background:black;color:#00FF00;font-family:Arial;">
 
-<iframe id="screen" width="100%" height="100%" style="border:none;"></iframe>
+<h2>LIVE OPERATIONS</h2>
+
+<table border="1" width="100%">
+<tr>
+<th>AWB</th>
+<th>Flight</th>
+<th>Route</th>
+<th>Status</th>
+<th>Countdown</th>
+</tr>
+<tbody id="tbl"><tr><td colspan="5">Loading...</td></tr></tbody>
+</table>
 
 <script>
 
-let screens = [
-  "screen-ops.html",
-  "screen-ticker.html",
-  "screen-alerts.html"
-];
+fetch('./data/awb.json')
+.then(r=>r.json())
+.then(d=>{
 
-let i = 0;
+let rows="";
 
-function rotate() {
-  document.getElementById("screen").src = screens[i];
-  i = (i + 1) % screens.length;
-}
+d.data.forEach(x=>{
 
-rotate();
-setInterval(rotate, 60000);
+let diff = Math.floor((new Date(x.etd)-new Date())/60000);
+
+let color = x.delay==="YES" ? "red" : "green";
+
+rows += `
+<tr style="background:${color};color:white">
+<td>${x.awb}</td>
+<td>${x.flight}</td>
+<td>${x.origin}-${x.destination}</td>
+<td>${x.status}</td>
+<td>${diff} min</td>
+</tr>`;
+});
+
+document.getElementById("tbl").innerHTML=rows;
+
+})
+.catch(e=>{
+  document.getElementById("tbl").innerHTML =
+  "<tr><td colspan='5'>Error loading data</td></tr>";
+});
 
 </script>
 
