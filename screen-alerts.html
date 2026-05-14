@@ -8,27 +8,25 @@
 
 <script>
 
-fetch('./data/awb.json')
-.then(r=>r.json())
-.then(d=>{
+fetch('https://raw.githubusercontent.com/sakash0270/aviation-dashboard/main/data/awb.json')
+.then(r => r.json())
+.then(data => {
 
-let html="";
+let html = "";
 
-d.data.forEach(x=>{
-
-if(x.delay==="YES"){
-  html += `<p style="color:red;font-size:22px">
-  DELAY: ${x.awb} (${x.flight}) ${x.origin}-${x.destination}
-  </p>`;
+data.data.forEach(x => {
+if (x.delay === "YES") {
+html += `<p style="color:red;font-size:22px">
+DELAY: ${x.awb} (${x.flight}) ${x.origin}-${x.destination}
+</p>`;
 }
-
 });
 
 document.getElementById("alerts").innerHTML = html || "No alerts";
 
 })
 .catch(()=>{
-  document.getElementById("alerts").innerText = "Error loading data";
+document.getElementById("alerts").innerText = "ERROR";
 });
 
 </script>
