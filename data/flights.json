@@ -5,5 +5,20 @@
     "route": "DXB-FRA",
     "status": "In Transit",
     "time": "2026-05-19T18:00:00"
+  },
+  {
+    "awb": "17624825006",
+    "flight": "KL428",
+    "route": "DXB-AMS",
+    "status": "Arrived",
+    "time": "2026-05-19T09:00:00"
+  },
+  {
+    "awb": "28578183523",
+    "flight": "EY011",
+    "route": "AUH-LHR",
+    "status": "Departed",
+    "time": "2026-05-19T20:30:00"
   }
 ]
+``
