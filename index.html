@@ -1,30 +1,260 @@
 <!DOCTYPE html>
 <html>
-<body style="margin:0;background:black;">
+<head>
+  <title>Aviation Operations Dashboard</title>
 
-<iframe id="screen" style="width:100%;height:100vh;border:none;"></iframe>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      color: white;
+      font-family: Arial;
+      overflow-x: hidden;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: 3fr 1fr;
+      grid-template-rows: 60px auto;
+      height: 100vh;
+    }
+
+    /* TICKER */
+    .ticker {
+      grid-column: 1 / 3;
+      background: black;
+      color: yellow;
+      font-size: 24px;
+      overflow: hidden;
+      white-space: nowrap;
+      border-bottom: 2px solid gray;
+    }
+
+    .ticker span {
+      display: inline-block;
+      padding-left: 100%;
+      animation: scrollTicker 25s linear infinite;
+    }
+
+    @keyframes scrollTicker {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* TABLE */
+    .table-container {
+      padding: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 18px;
+    }
+
+    th, td {
+      border: 1px solid white;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background: #111;
+    }
+
+    .on-time { background: #004d00; }
+    .delayed { background: #990000; }
+    .in-transit { background: #663300; }
+
+    /* ALERT PANEL */
+    .alerts {
+      padding: 20px;
+      border-left: 2px solid gray;
+    }
+
+    .alerts h2 {
+      margin-top: 0;
+    }
+
+    .alert-item {
+      color: red;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+  <!-- ✅ TICKER -->
+  <div class="ticker">
+    <span id="tickerText">Loading...</span>
+  </div>
+
+  <!-- ✅ TABLE -->
+  <div class="table-container">
+    <h1>LIVE OPERATIONS</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>AWB</th>
+          <th>Flight</th>
+          <th>Route</th>
+          <th>Status</th>
+          <th>Countdown</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- ✅ ALERTS -->
+  <div class="alerts">
+    <h2>ALERTS</h2>
+    <div id="alertList"></div>
+  </div>
+
+</div>
 
 <script>
 
-// load screens from full URL (fixes blank issue)
-const screens = [
-  "https://sakash0270.github.io/aviation-dashboard/screen-ops.html",
-  "https://sakash0270.github.io/aviation-dashboard/screen-ticker.html",
-  "https://sakash0270.github.io/aviation-dashboard/screen-alerts.html"
+/* ✅ SAMPLE DATA (Replace later with JSON fetch) */
+const data = [
+  {
+    awb: "17627290233",
+    flight: "EK045",
+    route: "DXB-FRA",
+    status: "In Transit",
+    time: "2026-05-19T18:00:00"
+  },
+  {
+    awb: "17624825006",
+    flight: "KL428",
+    route: "DXB-AMS",
+    status: "Arrived",
+    time: "2026-05-19T09:00:00"
+  },
+  {
+    awb: "28578183523",
+    flight: "EY011",
+    route: "AUH-LHR",
+    status: "Departed",
+    time: "2026-05-19T20:30:00"
+  }
 ];
 
-let i = 0;
 
-// load first screen immediately
-document.getElementById("screen").src = screens[0];
+/* ✅ COUNTDOWN FIX */
+function getCountdown(time) {
+  const now = new Date();
+  const target = new Date(time);
 
-// rotate every 60 sec
-setInterval(() => {
-  i = (i + 1) % screens.length;
-  document.getElementById("screen").src = screens[i];
-}, 60000);
+  if (isNaN(target)) return "Invalid";
+
+  const diff = Math.floor((target - now) / 60000);
+
+  if (diff < 0) return "Completed";
+
+  return diff + " min";
+}
+
+
+/* ✅ STATUS LOGIC FIX */
+function getStatusClass(flight) {
+  const now = new Date();
+  const target = new Date(flight.time);
+  const diff = (target - now) / 60000;
+
+  if (flight.status === "Arrived") return "on-time";
+
+  if (diff < -30) return "delayed";
+
+  if (flight.status === "In Transit") return "in-transit";
+
+  return "on-time";
+}
+
+
+/* ✅ RENDER TABLE */
+function renderTable() {
+  const tbody = document.getElementById("tableBody");
+  tbody.innerHTML = "";
+
+  data.forEach(f => {
+    const rowClass = getStatusClass(f);
+
+    const row = `
+      <tr class="${rowClass}">
+        <td>${f.awb}</td>
+        <td>${f.flight}</td>
+        <td>${f.route}</td>
+        <td>${f.status}</td>
+        <td>${getCountdown(f.time)}</td>
+      </tr>
+    `;
+
+    tbody.innerHTML += row;
+  });
+}
+
+
+/* ✅ RENDER ALERTS */
+function renderAlerts() {
+  const alertDiv = document.getElementById("alertList");
+  alertDiv.innerHTML = "";
+
+  const alerts = data.filter(f => {
+    const now = new Date();
+    const target = new Date(f.time);
+    const diff = (target - now) / 60000;
+
+    return diff < -30 && f.status !== "Arrived";
+  });
+
+  if (alerts.length === 0) {
+    alertDiv.innerHTML = "<p>No active alerts</p>";
+    return;
+  }
+
+  alerts.forEach(f => {
+    alertDiv.innerHTML += `
+      <div class="alert-item">
+        DELAY: ${f.awb} (${f.flight}) ${f.route}
+      </div>
+    `;
+  });
+}
+
+
+/* ✅ TICKER */
+function renderTicker() {
+  const ticker = document.getElementById("tickerText");
+
+  const text = data.map(f =>
+    `${f.awb} ${f.status} ✈`
+  ).join(" | ");
+
+  ticker.innerText = text;
+}
+
+
+/* ✅ INIT */
+function init() {
+  renderTable();
+  renderAlerts();
+  renderTicker();
+}
+
+/* ✅ AUTO REFRESH (every 30 sec) */
+setInterval(init, 30000);
+
+init();
 
 </script>
 
 </body>
 </html>
+``
