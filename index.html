@@ -64,6 +64,12 @@
     .on-time { background: #004d00; }
     .delayed { background: #990000; }
     .in-transit { background: #663300; }
+    
+.urgent {
+  background: orange;
+  color: black;
+  font-weight: bold;
+}
 
     /* ALERTS */
     .alerts {
@@ -166,8 +172,12 @@ function getStatusClass(flight) {
   const diff = (target - now) / 60000;
 
   if (flight.status === "Arrived") return "on-time";
+
+  if (flight.status === "Departed") return "in-transit";
+
   if (diff < -30) return "delayed";
-  if (flight.status === "In Transit") return "in-transit";
+
+  if (diff < 30 && diff > 0) return "urgent"; // 🔥 new rule
 
   return "on-time";
 }
