@@ -55,7 +55,6 @@
     th, td {
       border: 1px solid white;
       padding: 10px;
-      text-align: left;
     }
 
     th {
@@ -66,14 +65,10 @@
     .delayed { background: #990000; }
     .in-transit { background: #663300; }
 
-    /* ALERT PANEL */
+    /* ALERTS */
     .alerts {
       padding: 20px;
       border-left: 2px solid gray;
-    }
-
-    .alerts h2 {
-      margin-top: 0;
     }
 
     .alert-item {
@@ -81,7 +76,6 @@
       font-size: 20px;
       margin-bottom: 10px;
     }
-
   </style>
 </head>
 
@@ -121,33 +115,36 @@
 
 <script>
 
-/* ✅ SAMPLE DATA (Replace later with JSON fetch) */
-const data = [
-  {
-    awb: "17627290233",
-    flight: "EK045",
-    route: "DXB-FRA",
-    status: "In Transit",
-    time: "2026-05-19T18:00:00"
-  },
-  {
-    awb: "17624825006",
-    flight: "KL428",
-    route: "DXB-AMS",
-    status: "Arrived",
-    time: "2026-05-19T09:00:00"
-  },
-  {
-    awb: "28578183523",
-    flight: "EY011",
-    route: "AUH-LHR",
-    status: "Departed",
-    time: "2026-05-19T20:30:00"
-  }
-];
+/* ✅ GLOBAL DATA */
+let data = [];
 
+/* ✅ FETCH DATA */
+function loadData() {
+  fetch('./data/flights.json')
+    .then(res => {
+      if (!res.ok) throw new Error("JSON load failed");
+      return res.json();
+    })
+    .then(json => {
+      console.log("Loaded:", json);
+      data = json;
+      init();
+    })
+    .catch(err => {
+      console.error(err);
 
-/* ✅ COUNTDOWN FIX */
+      document.getElementById("tableBody").innerHTML =
+        "<tr><td colspan='5'>DATA LOAD ERROR</td></tr>";
+
+      document.getElementById("alertList").innerHTML =
+        "<p>Error loading alerts</p>";
+
+      document.getElementById("tickerText").innerText =
+        "DATA LOAD ERROR";
+    });
+}
+
+/* ✅ COUNTDOWN */
 function getCountdown(time) {
   const now = new Date();
   const target = new Date(time);
@@ -156,90 +153,77 @@ function getCountdown(time) {
 
   const diff = Math.floor((target - now) / 60000);
 
-  if (diff < 0) return "Completed";
-
-  return diff + " min";
+  return diff < 0 ? "Completed" : diff + " min";
 }
 
-
-/* ✅ STATUS LOGIC FIX */
+/* ✅ STATUS */
 function getStatusClass(flight) {
   const now = new Date();
   const target = new Date(flight.time);
   const diff = (target - now) / 60000;
 
   if (flight.status === "Arrived") return "on-time";
-
   if (diff < -30) return "delayed";
-
   if (flight.status === "In Transit") return "in-transit";
 
   return "on-time";
 }
 
-
-/* ✅ RENDER TABLE */
+/* ✅ TABLE */
 function renderTable() {
   const tbody = document.getElementById("tableBody");
   tbody.innerHTML = "";
 
   data.forEach(f => {
-    const rowClass = getStatusClass(f);
+    const cls = getStatusClass(f);
 
-    const row = `
-      <tr class="${rowClass}">
+    tbody.innerHTML += `
+      <tr class="${cls}">
         <td>${f.awb}</td>
         <td>${f.flight}</td>
         <td>${f.route}</td>
         <td>${f.status}</td>
         <td>${getCountdown(f.time)}</td>
-      </tr>
-    `;
-
-    tbody.innerHTML += row;
+      </tr>`;
   });
 }
 
-
-/* ✅ RENDER ALERTS */
+/* ✅ ALERTS */
 function renderAlerts() {
-  const alertDiv = document.getElementById("alertList");
-  alertDiv.innerHTML = "";
+  const el = document.getElementById("alertList");
+  el.innerHTML = "";
 
   const alerts = data.filter(f => {
-    const now = new Date();
-    const target = new Date(f.time);
-    const diff = (target - now) / 60000;
-
+    const diff = (new Date(f.time) - new Date()) / 60000;
     return diff < -30 && f.status !== "Arrived";
   });
 
-  if (alerts.length === 0) {
-    alertDiv.innerHTML = "<p>No active alerts</p>";
+  if (!alerts.length) {
+    el.innerHTML = "<p>No active alerts</p>";
     return;
   }
 
   alerts.forEach(f => {
-    alertDiv.innerHTML += `
+    el.innerHTML += `
       <div class="alert-item">
         DELAY: ${f.awb} (${f.flight}) ${f.route}
-      </div>
-    `;
+      </div>`;
   });
 }
 
-
 /* ✅ TICKER */
 function renderTicker() {
-  const ticker = document.getElementById("tickerText");
+  const t = document.getElementById("tickerText");
 
-  const text = data.map(f =>
+  if (!data.length) {
+    t.innerText = "No data available";
+    return;
+  }
+
+  t.innerText = data.map(f =>
     `${f.awb} ${f.status} ✈`
   ).join(" | ");
-
-  ticker.innerText = text;
 }
-
 
 /* ✅ INIT */
 function init() {
@@ -248,10 +232,9 @@ function init() {
   renderTicker();
 }
 
-/* ✅ AUTO REFRESH (every 30 sec) */
-setInterval(init, 30000);
-
-init();
+/* ✅ START */
+loadData();
+setInterval(loadData, 30000);
 
 </script>
 
