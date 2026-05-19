@@ -120,7 +120,7 @@ let data = [];
 
 /* ✅ FETCH DATA */
 function loadData() {
-  fetch('./data/flights.json')
+ fetch('data/flights.json')
     .then(res => {
       if (!res.ok) throw new Error("JSON load failed");
       return res.json();
