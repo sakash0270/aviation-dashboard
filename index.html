@@ -120,22 +120,19 @@ let data = [];
 
 /* ✅ FETCH DATA */
 function loadData() {
-  fetch('https://sakash0270.github.io/aviation-dashboard/data/flights.json')
+  const url = 'https://sakash0270.github.io/aviation-dashboard/data/flights.json';
+
+  fetch(url + '?t=' + new Date().getTime())  // ✅ cache-buster
     .then(res => {
-      console.log("Status:", res.status);
-
-      if (!res.ok) throw new Error("Fetch failed");
-
+      if (!res.ok) throw new Error("Fetch failed: " + res.status);
       return res.json();
     })
     .then(json => {
-      console.log("✅ Data loaded:", json);
-
       data = json;
-      init();
+      init();   // ✅ render everything
     })
     .catch(err => {
-      console.error("❌ ERROR:", err);
+      console.error("ERROR:", err);
 
       document.getElementById("tableBody").innerHTML =
         "<tr><td colspan='5'>DATA LOAD ERROR</td></tr>";
@@ -147,6 +144,7 @@ function loadData() {
         "DATA LOAD ERROR";
     });
 }
+
 /* ✅ COUNTDOWN */
 function getCountdown(time) {
   const now = new Date();
