@@ -120,18 +120,22 @@ let data = [];
 
 /* ✅ FETCH DATA */
 function loadData() {
- fetch('data/flights.json')
+  fetch('https://sakash0270.github.io/aviation-dashboard/data/flights.json')
     .then(res => {
-      if (!res.ok) throw new Error("JSON load failed");
+      console.log("Status:", res.status);
+
+      if (!res.ok) throw new Error("Fetch failed");
+
       return res.json();
     })
     .then(json => {
-      console.log("Loaded:", json);
+      console.log("✅ Data loaded:", json);
+
       data = json;
       init();
     })
     .catch(err => {
-      console.error(err);
+      console.error("❌ ERROR:", err);
 
       document.getElementById("tableBody").innerHTML =
         "<tr><td colspan='5'>DATA LOAD ERROR</td></tr>";
@@ -143,7 +147,6 @@ function loadData() {
         "DATA LOAD ERROR";
     });
 }
-
 /* ✅ COUNTDOWN */
 function getCountdown(time) {
   const now = new Date();
